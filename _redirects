@@ -1,0 +1,23 @@
+# Cloudflare Pages redirects.
+#
+# Pages already serves /about from about.html automatically. These rules
+# canonicalise the reverse direction so the .html form does not linger as a
+# duplicate URL in search results, and retire the old same-origin portal paths.
+
+/index.html         /              301
+/about.html         /about         301
+/services.html      /services      301
+/resources.html     /resources     301
+/get-involved.html  /get-involved  301
+/volunteer.html     /volunteer     301
+/donate.html        /donate        301
+/contact.html       /contact       301
+/thank-you.html     /thank-you     301
+/privacy.html       /privacy       301
+/terms.html         /terms         301
+
+# The staff portal is a separate application on its own hostname. These used to
+# depend on /portal/* and /api/* falling through to the portal worker from this
+# origin -- a coupling the site no longer has.
+/portal             https://portal.pivotpointrecovery.org      301
+/portal/*           https://portal.pivotpointrecovery.org/:splat  301

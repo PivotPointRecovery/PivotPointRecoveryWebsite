@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Not useful in search results: the post-donation landing page and the error
+# page. Both also carry <meta name="robots" content="noindex">.
+Disallow: /thank-you
+Disallow: /404
+
+Sitemap: https://pivotpointrecovery.org/sitemap.xml

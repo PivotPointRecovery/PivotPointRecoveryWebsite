@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Donate — Pivot Point Recovery</title>
   <meta name="description" content="Support peer-led recovery in Northern Virginia. Your gift funds mentorship, recovery navigation, and reentry support — free to the people who need them.">
+  <link rel="canonical" href="https://pivotpointrecovery.org/donate">
+  <!-- Social sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pivot Point Recovery">
+  <meta property="og:title" content="Donate — Pivot Point Recovery">
+  <meta property="og:description" content="Support peer-led recovery in Northern Virginia. Your gift funds mentorship, recovery navigation, and reentry support — free to the people who need them.">
+  <meta property="og:url" content="https://pivotpointrecovery.org/donate">
+  <meta property="og:image" content="https://pivotpointrecovery.org/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Pivot Point Recovery — peer-led recovery support in Northern Virginia">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Donate — Pivot Point Recovery">
+  <meta name="twitter:description" content="Support peer-led recovery in Northern Virginia. Your gift funds mentorship, recovery navigation, and reentry support — free to the people who need them.">
+  <meta name="twitter:image" content="https://pivotpointrecovery.org/og-image.png">
+  <meta name="theme-color" content="#005191">
+  <!-- /Social sharing -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
@@ -227,7 +244,7 @@
         </div>
         <div class="footer-col">
           <h4>Navigate</h4>
-          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/portal">PPR Login</a></li></ul>
+          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="https://portal.pivotpointrecovery.org" rel="noopener">PPR Login</a></li></ul>
         </div>
         <div class="footer-col">
           <h4>Crisis Resources</h4>
@@ -242,6 +259,7 @@
       <p class="footer-legal">Pivot Point Recovery, Inc. is a registered 501(c)(3) nonprofit organization. EIN 41-4331928. Donations are tax-deductible to the extent allowed by law.</p>
       <div class="footer-bottom">
         <p>&copy; 2025 Pivot Point Recovery. All rights reserved.</p>
+        <p><a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></p>
         <p class="photo-credit">Photos by <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a></p>
       </div>
     </div>
@@ -251,10 +269,16 @@
 
   <script src="/main.js"></script>
   <script>
-    // Posts to the portal's donation checkout API on the same host. That
-    // route resolves the tenant from the request host server-side, creates a
-    // Stripe Checkout session, and returns { url } for us to redirect to.
-    const CHECKOUT_ENDPOINT = '/api/donations/checkout';
+    // Posts to this site's own Supabase edge function, which creates a Stripe
+    // Checkout session and returns { url } for us to redirect to.
+    //
+    // This previously called the portal's /api/donations/checkout on the same
+    // origin. That route sits behind the portal's auth middleware and answered
+    // 307 -> /login for anonymous visitors, so the fetch received the login
+    // page's HTML, res.json() threw, and every donor saw a generic error. The
+    // website now owns its giving path end to end and no longer requires the
+    // portal to be mounted alongside it.
+    const CHECKOUT_ENDPOINT = 'https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/donate-checkout';
 
     let amount = 50;
     let isRecurring = false;
@@ -336,8 +360,10 @@
     document.getElementById('donateForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      // Honeypot: bots fill this. Pretend success and drop the submission.
-      if (document.getElementById('_honeypot').value.trim()) return;
+      // The honeypot is forwarded rather than short-circuited here, so the
+      // decision to drop a submission is made server-side where a bot cannot
+      // skip it by disabling JavaScript.
+      const honeypot = document.getElementById('_honeypot').value;
 
       const donorName = document.getElementById('donorName').value.trim();
       const donorEmail = document.getElementById('donorEmail').value.trim();
@@ -360,7 +386,8 @@
         donor_name: donorName,
         donor_email: donorEmail,
         is_recurring: isRecurring,
-        employer_match: employerMatch
+        employer_match: employerMatch,
+        _honeypot: honeypot
       };
       if (isRecurring) payload.frequency = 'monthly';
       if (fund) payload.fund_designation = fund;
@@ -384,6 +411,16 @@
     });
 
     refresh();
+
+    // Stripe sends abandoned checkouts back to /donate?canceled=1. Say so
+    // plainly -- a donor returning to an unchanged form otherwise cannot tell
+    // whether they were charged.
+    (function () {
+      if (new URLSearchParams(window.location.search).get('canceled')) {
+        showToast('Checkout canceled — you have not been charged.', 'success');
+        history.replaceState(null, '', '/donate');
+      }
+    })();
   </script>
 </body>
 </html>
