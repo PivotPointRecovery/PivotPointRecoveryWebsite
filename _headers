@@ -1,16 +1,22 @@
 # Cloudflare Pages security headers for the public marketing site.
 #
-# Scope note: these apply to the static marketing pages in this repo only.
-# The portal application (/portal/*, /api/*) sets its own, stricter headers —
-# in particular it must keep `frame-ancestors`/X-Frame-Options locked down for
-# the authenticated, 42 CFR Part 2 + HIPAA surfaces.
+# This repo is now self-contained: the site talks to its own Supabase edge
+# functions and to Stripe, and does not require the portal application to be
+# mounted on the same origin.
 #
 # CSP allowances and why each is needed:
-#   style-src  fonts.googleapis.com  — Google Fonts stylesheet
-#   font-src   fonts.gstatic.com     — the font files themselves
-#   img-src    images.pexels.com     — hero / CTA photography
-#   connect-src *.supabase.co        — public-forms edge function (contact + volunteer)
-#   'unsafe-inline'                  — the page-level <script>/<style> blocks in each HTML file
+#   style-src   fonts.googleapis.com   — Google Fonts stylesheet
+#   font-src    fonts.gstatic.com      — the font files themselves
+#   img-src     images.pexels.com      — hero / CTA photography
+#   connect-src *.supabase.co          — public-forms + donate-checkout
+#   form-action js.stripe.com,         — donation checkout leaves this origin
+#               checkout.stripe.com      for Stripe's hosted payment page
+#   'unsafe-inline'                    — the page-level <script>/<style> blocks
+#                                        in each HTML file
+#
+# Card data never touches this origin, so no Stripe script is loaded here and
+# script-src stays closed to third parties. Only the redirect out needs
+# allowing, which is what form-action covers.
 
 /*
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
@@ -19,4 +25,4 @@
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self)
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://images.pexels.com; connect-src 'self' https://*.supabase.co; frame-ancestors 'none'; object-src 'none'; base-uri 'self';
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://images.pexels.com; connect-src 'self' https://*.supabase.co; form-action 'self' https://checkout.stripe.com https://js.stripe.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';

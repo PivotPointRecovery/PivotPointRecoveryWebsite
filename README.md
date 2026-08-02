@@ -1,12 +1,15 @@
 # Pivot Point Recovery — Public Website
 
-The public marketing site for [pivotpointrecovery.org](https://pivotpointrecovery.org).
+The public website for [pivotpointrecovery.org](https://pivotpointrecovery.org).
 
-Plain static HTML + CSS + a little vanilla JS. No build step, no framework, no
-dependencies. Open a file in a browser and it works.
+Plain static HTML + CSS + vanilla JS for the pages, with a small set of Supabase
+edge functions for the two things a static site cannot do by itself: accept form
+submissions and take donations.
 
-This repo is **only** the public website. The staff portal, CRM, accounting,
-and donation processing live in the separate `nonprofitportal` application.
+**This repo is self-contained.** It does not require the `nonprofitportal`
+application to be running, deployed, or mounted on the same origin. The staff
+portal, CRM, and accounting remain a separate product; the website no longer
+depends on any of it at runtime.
 
 ## Pages
 
@@ -19,10 +22,18 @@ and donation processing live in the separate `nonprofitportal` application.
 | `/get-involved` | `get-involved.html` | Ways to help |
 | `/volunteer` | `volunteer.html` | Volunteer interest form |
 | `/donate` | `donate.html` | Giving page → Stripe Checkout |
+| `/thank-you` | `thank-you.html` | Post-donation landing (`noindex`) |
 | `/contact` | `contact.html` | Contact form |
+| `/privacy` | `privacy.html` | Privacy policy |
+| `/terms` | `terms.html` | Terms of use, incl. donation + refund terms |
+| — | `404.html` | Branded not-found page |
 
 Shared assets: `styles.css`, `main.js`, `logo-color.svg`, `logo-white.svg`,
-`favicon.svg`, `veteran.jpeg`.
+`favicon.svg`, `og-image.png`, `veteran.jpeg`.
+
+The resource directory supports deep links to a category:
+`/resources?tag=employment`. Tag names are the `data-tag` values in
+`resources.html`.
 
 ## Design system
 
@@ -33,15 +44,35 @@ Defined as CSS custom properties at the top of `styles.css`.
 - 1200px container, 12px radius
 
 Reuse the existing classes rather than adding new ones where possible:
-`page-hero`, `content-section`, `section-title`, `section-label`,
-`involve-card`, `service-detail`, `split-section`, `check-list`, `cta-banner`,
-`contact-form`, `form-group`, `btn btn-primary|btn-blue|btn-outline|btn-ghost`.
+`page-hero`, `content-section`, `content-narrow`, `section-title`,
+`section-label`, `involve-card`, `service-detail`, `split-section`,
+`check-list`, `cta-banner`, `contact-form`, `form-group`,
+`btn btn-primary|btn-blue|btn-outline|btn-ghost`.
 
-## Forms
+There is no build step and no templating. Shared markup — nav, footer, meta
+tags — is duplicated across pages by design; when you change it, change it
+everywhere. `docs/DEPLOYMENT.md` describes the checks that catch a page you
+missed.
 
-Both public forms POST to the same Supabase edge function, which validates the
-payload, writes it to the database with the service role, and emails staff via
-Resend:
+## Backend
+
+Three Supabase edge functions, with source in this repo under
+`supabase/functions/`. Project ref `ydynhwrlpwvlhhohzfwl`.
+
+| Function | Called by | Purpose |
+| --- | --- | --- |
+| `public-forms` | contact.html, volunteer.html | Validate, save, notify staff |
+| `donate-checkout` | donate.html | Create a Stripe Checkout Session |
+| `donate-webhook` | Stripe | Record the completed gift |
+
+Schema lives in `supabase/migrations/`. The tables — `contact_submissions`,
+`volunteer_interests`, `donations` — have RLS enabled with **no** public
+policies; only the service role used by the edge functions can read or write
+them. The migration is idempotent and safe to re-run against the live database.
+
+### Forms
+
+Both public forms POST to `public-forms` with a `form_type` discriminator:
 
 ```
 https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms
@@ -52,57 +83,65 @@ https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms
 | Contact | `contact` | `contact_submissions` |
 | Volunteer | `volunteer` | `volunteer_interests` |
 
-Both include an off-screen honeypot field (`_honeypot`); the function silently
-accepts and drops any submission that fills it.
+Both include an off-screen honeypot (`_honeypot`); the function silently accepts
+and drops any submission that fills it.
 
-### Who receives the notification emails
+The save and the notification are independent. A submission is never lost
+because email failed — the response reports `notified` so a silent mail failure
+is visible instead of invisible. **`notified: false` means the row was saved but
+nobody was told**, which is a configuration problem, not a code problem: see
+Secrets below.
 
-Recipients are **not** configured in this repo. The edge function reads a
-comma-separated `NOTIFICATION_EMAILS` secret, and sends through Resend:
+### Donations
+
+`donate.html` collects the amount and donor details and POSTs to
+`donate-checkout`, which returns `{ url }` for a redirect to Stripe Checkout.
+Card data never touches this site.
+
+The **webhook is the source of truth** for money. `donate-checkout` writes a
+`pending` row before redirecting; `donate-webhook` verifies the Stripe signature
+and promotes it to `completed`. Loading `/thank-you` records nothing — a donor
+who closes the tab is still recorded, and anyone can navigate to that URL
+without paying.
+
+Amounts are validated server-side (min $1, max $50,000). The client's number is
+a suggestion.
+
+> **Previously:** the donate form posted to `/api/donations/checkout` on the
+> portal. That route sits behind the portal's auth middleware and answers
+> `307 → /login` for anonymous visitors, so every donation attempt failed with a
+> generic error. Removing that dependency is why this backend exists.
+
+## Secrets
+
+Set on the Supabase project — never committed here.
+
+| Secret | Used by | Notes |
+| --- | --- | --- |
+| `STRIPE_SECRET_KEY` | donate-checkout, donate-webhook | `sk_live_…` |
+| `STRIPE_WEBHOOK_SECRET` | donate-webhook | `whsec_…` |
+| `RESEND_API_KEY` | public-forms, donate-webhook | `re_…` |
+| `NOTIFICATION_EMAILS` | public-forms, donate-webhook | comma-separated |
+| `RESEND_FROM` | public-forms, donate-webhook | verified domain |
+| `SITE_URL` | donate-checkout | defaults to the production URL |
+| `ALLOWED_ORIGINS` | all | optional; defaults to production hosts |
+| `NOTIFICATION_PREFIX` | public-forms, donate-webhook | optional subject tag |
+
+`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected by the platform.
+
+Each secret resolves through a small alias list (`STRIPE_SECRET_KEY`,
+`PPR_STRIPE_SECRET_KEY`, `STRIPE_API_KEY`, …) so an existing name already set on
+the project is picked up — see `supabase/functions/_shared/env.ts`.
+
+Check what is actually configured without revealing any values:
 
 ```sh
-supabase secrets set RESEND_API_KEY="re_..." \
-  NOTIFICATION_EMAILS="steve@pivotpointrecovery.org,info@pivotpointrecovery.org" \
-  RESEND_FROM="Pivot Point Recovery <info@pivotpointrecovery.org>" \
-  NOTIFICATION_PREFIX="PPR"
+curl -s 'https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/donate-checkout?health=1'
+curl -s 'https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms?health=1'
+curl -s 'https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/donate-webhook?health=1'
 ```
 
-If either `RESEND_API_KEY` or `NOTIFICATION_EMAILS` is unset, the submission is
-still saved to the database but **no email goes out**. The function returns
-`{ ok: true, notified: false }` and logs the reason.
-
-> **Known issue as of this commit.** A live test submission against the
-> deployed function returned `{"ok":true,"notified":false}` — rows are being
-> saved but no notification email is being sent, for the contact form as well
-> as volunteer. Setting the secrets above is required to actually get mail to
-> Steve; the form markup alone is not sufficient.
-
-Verify with:
-
-```sh
-curl -s -X POST https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms \
-  -H 'Content-Type: application/json' -H 'Origin: https://pivotpointrecovery.org' \
-  -d '{"form_type":"volunteer","first_name":"Test","last_name":"Test","email":"you@example.com","phone":"5555550100"}'
-```
-
-`notified` must come back `true`.
-
-## Donations
-
-`donate.html` collects the amount and donor details, then POSTs to the portal's
-checkout API on the same origin:
-
-```
-POST /api/donations/checkout  →  { url }  →  redirect to Stripe Checkout
-```
-
-The API resolves the tenant from the request host server-side and never trusts
-a tenant field in the body. Card data never touches this site.
-
-**Deployment requirement:** `/api/*` and `/portal/*` must continue to route to
-the portal application. If this static site is served as a Cloudflare Pages
-project in front of the portal Worker, keep those prefixes falling through —
-otherwise the donate form has no checkout endpoint.
+Each returns presence booleans and a `missing` list — never secret values.
 
 ## Local development
 
@@ -110,13 +149,29 @@ No build step. Serve the directory over HTTP so root-relative paths resolve:
 
 ```sh
 python3 -m http.server 8080
-# then open http://localhost:8080
 ```
 
-Note that `/donate` submissions will fail locally — there's no `/api` backend
-on the dev server. Test giving against a deployed preview.
+Local pages are served as `/donate.html` rather than `/donate`; Cloudflare Pages
+adds the clean URLs in production.
+
+Forms and donations call the deployed Supabase functions, which allow
+`localhost` as a CORS origin — so they work locally, against **live** data and
+**live** Stripe keys. Use Stripe test mode if you are exercising checkout.
+
+Run the backend tests (requires [Deno](https://deno.com)):
+
+```sh
+deno task test    # validation, amount clamping, CORS allowlist
+deno task check   # typecheck all three functions
+```
 
 ## Deployment
 
-Cloudflare Pages, served from the repository root. `_headers` sets the security
-and CSP policy; extend the CSP there if you add a new external asset host.
+- **Site:** Cloudflare Pages, served from the repository root. `_headers` sets
+  security and CSP; `_redirects` handles clean-URL canonicalisation. Extend the
+  CSP in `_headers` if you add a new external asset host.
+- **Backend:** `supabase functions deploy` — see `docs/DEPLOYMENT.md`.
+
+Full runbook: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+Post-deploy checks: [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
+What was built and why: [`docs/BUILD-PLAN.md`](docs/BUILD-PLAN.md).

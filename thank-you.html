@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You — Pivot Point Recovery</title>
+  <meta name="description" content="Thank you for supporting peer-led recovery in Northern Virginia.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://pivotpointrecovery.org/thank-you">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img class="nav-logo-img nav-logo-white" src="/logo-white.svg" alt="Pivot Point Recovery">
+        <img class="nav-logo-img nav-logo-teal" src="/logo-color.svg" alt="Pivot Point Recovery">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">Our Story</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/resources" class="nav-resources">Find Local Resources</a></li>
+        <li><a href="/get-involved">Get Involved</a></li>
+        <li><a href="/volunteer" class="nav-volunteer">Volunteer</a></li>
+        <li><a href="/donate" class="nav-donate">Donate</a></li>
+        <li><a href="/contact" class="nav-cta">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-bg">
+      <img src="https://images.pexels.com/photos/6129493/pexels-photo-6129493.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="" loading="eager">
+      <div class="page-hero-overlay"></div>
+    </div>
+    <div class="container">
+      <p class="section-label">Thank You</p>
+      <h1 class="section-title">Your Gift Is On Its Way to Work</h1>
+      <p id="giftLine">You just made peer recovery support possible for someone in Northern Virginia.</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="content-narrow">
+        <h2>What Happens Next</h2>
+        <p>
+          Stripe is emailing your receipt now — keep it for your tax records.
+          Pivot Point Recovery, Inc. is a registered 501(c)(3) nonprofit, EIN
+          41-4331928, and your donation is tax-deductible to the extent allowed
+          by law.
+        </p>
+        <p>
+          If your employer matches charitable gifts, submit their matching form
+          whenever you're ready and we'll provide any documentation they ask for.
+          <a href="/contact">Get in touch</a> and we'll handle it.
+        </p>
+
+        <h2>Where Your Money Actually Goes</h2>
+        <p>
+          Every Pivot Point service is free to the person receiving it. There is
+          no sliding scale and no insurance requirement, because the people who
+          need us most are usually the ones who can least afford another bill.
+          Gifts like yours are the entire reason that's possible.
+        </p>
+        <p>
+          Your support pays for transportation to a court date, an hour with a
+          Certified Peer Recovery Specialist, a reentry starter kit for someone
+          walking out of incarceration with nothing — the concrete, unglamorous
+          things that decide whether a recovery holds.
+        </p>
+
+        <h2>Stay Connected</h2>
+        <p>
+          If you'd like to go further, we always need volunteers more than we
+          need almost anything else.
+        </p>
+        <div class="cta-actions" style="margin-top:1.5rem">
+          <a href="/volunteer" class="btn btn-primary btn-large">Volunteer With Us</a>
+          <a href="/about" class="btn btn-outline btn-large">Read Our Story</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo-link">
+            <img class="footer-logo-img" src="/logo-white.svg" alt="Pivot Point Recovery">
+          </a>
+          <p>Building a compassionate, recovery-centered community in Northern Virginia.</p>
+          <p class="footer-org-type">501(c)(3) Nonprofit Organization</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="https://portal.pivotpointrecovery.org" rel="noopener">PPR Login</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Crisis Resources</h4>
+          <ul><li><a href="tel:988">988 Suicide &amp; Crisis Lifeline</a></li><li><a href="tel:18006624357">SAMHSA: 1-800-662-4357</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <p>Northern Virginia</p>
+          <a href="/contact" class="btn btn-outline btn-small">Send a Message</a>
+        </div>
+      </div>
+      <p class="footer-legal">Pivot Point Recovery, Inc. is a registered 501(c)(3) nonprofit organization. EIN 41-4331928. Donations are tax-deductible to the extent allowed by law.</p>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pivot Point Recovery. All rights reserved.</p>
+        <p><a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/main.js"></script>
+  <script>
+    // Cosmetic only. The gift itself is recorded by the Stripe webhook, which
+    // is the sole source of truth -- reaching this page proves nothing about
+    // whether money moved, so nothing here writes to the database or claims a
+    // specific amount.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      if (!params.get('session_id')) {
+        // Landed here without completing checkout. Soften the copy rather than
+        // thanking someone for a donation they did not make.
+        var line = document.getElementById('giftLine');
+        if (line) line.textContent = 'Thanks for stopping by. If you were partway through a donation, you can pick it back up any time.';
+      }
+    })();
+  </script>
+</body>
+</html>
