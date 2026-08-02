@@ -25,7 +25,10 @@ Deno.serve(async (req) => {
   if (req.method === 'GET') {
     const url = new URL(req.url);
     if (url.searchParams.has('health')) {
-      return json(req, { service: 'public-forms', ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS) });
+      return json(req, {
+        service: 'public-forms',
+        ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS),
+      });
     }
     return fail(req, 'Method not allowed', 405);
   }

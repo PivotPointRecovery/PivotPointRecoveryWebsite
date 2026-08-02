@@ -42,9 +42,9 @@ Deno.test('amountToCents converts dollars to integer cents', () => {
 
 Deno.test('amountToCents rejects out-of-range and junk', () => {
   assertEquals(amountToCents(0), null);
-  assertEquals(amountToCents(0.5), null);       // below the $1 minimum
-  assertEquals(amountToCents(-100), null);      // negative
-  assertEquals(amountToCents(50_001), null);    // above the $50k ceiling
+  assertEquals(amountToCents(0.5), null); // below the $1 minimum
+  assertEquals(amountToCents(-100), null); // negative
+  assertEquals(amountToCents(50_001), null); // above the $50k ceiling
   assertEquals(amountToCents('abc'), null);
   assertEquals(amountToCents(Infinity), null);
   assertEquals(amountToCents(NaN), null);
@@ -65,7 +65,10 @@ function originHeader(origin: string): string | undefined {
 
 Deno.test('CORS allows production origins', () => {
   assertEquals(originHeader('https://pivotpointrecovery.org'), 'https://pivotpointrecovery.org');
-  assertEquals(originHeader('https://www.pivotpointrecovery.org'), 'https://www.pivotpointrecovery.org');
+  assertEquals(
+    originHeader('https://www.pivotpointrecovery.org'),
+    'https://www.pivotpointrecovery.org',
+  );
 });
 
 Deno.test('CORS allows Pages previews and localhost', () => {

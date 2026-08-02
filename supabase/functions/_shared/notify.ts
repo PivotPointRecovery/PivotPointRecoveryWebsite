@@ -1,3 +1,10 @@
+// deno-fmt-ignore-file
+//
+// Formatting is off for this file: deno fmt breaks the email HTML template
+// literals mid-tag, splitting `${escapeHtml(label)}` across three lines and
+// leaving the markup unreadable. The email layout is easier to maintain as
+// written.
+
 // Staff notification email via Resend.
 //
 // Design rule: a notification failure must never fail the request. The

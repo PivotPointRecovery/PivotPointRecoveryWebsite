@@ -39,7 +39,10 @@ Deno.serve(async (req) => {
   if (req.method === 'GET') {
     const url = new URL(req.url);
     if (url.searchParams.has('health')) {
-      return json(req, { service: 'donate-checkout', ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS) });
+      return json(req, {
+        service: 'donate-checkout',
+        ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS),
+      });
     }
     return fail(req, 'Method not allowed', 405);
   }
@@ -70,7 +73,9 @@ Deno.serve(async (req) => {
   if (amountCents === null) {
     return fail(
       req,
-      `Please enter an amount between $${MIN_DONATION_CENTS / 100} and $${(MAX_DONATION_CENTS / 100).toLocaleString('en-US')}.`,
+      `Please enter an amount between $${MIN_DONATION_CENTS / 100} and $${
+        (MAX_DONATION_CENTS / 100).toLocaleString('en-US')
+      }.`,
     );
   }
 

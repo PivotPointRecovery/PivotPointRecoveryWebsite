@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  site:
+    name: Static site checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Dead links, missing assets, unbalanced tags, sitemap drift, and any
+      # same-origin /api call reintroducing the portal dependency.
+      - run: python3 scripts/check-site.py
+
+  functions:
+    name: Edge functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Typecheck
+        run: deno task check
+      - name: Test
+        run: deno task test
+      - name: Lint
+        run: deno lint
+      - name: Format
+        run: deno fmt --check

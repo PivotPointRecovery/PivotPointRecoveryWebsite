@@ -27,7 +27,10 @@ Deno.serve(async (req) => {
   if (req.method === 'GET') {
     const url = new URL(req.url);
     if (url.searchParams.has('health')) {
-      return Response.json({ service: 'donate-webhook', ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS) });
+      return Response.json({
+        service: 'donate-webhook',
+        ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS),
+      });
     }
     return new Response('Method not allowed', { status: 405 });
   }
@@ -70,8 +73,12 @@ Deno.serve(async (req) => {
 
       const record = {
         stripe_session_id: session.id,
-        stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
-        stripe_subscription_id: typeof session.subscription === 'string' ? session.subscription : null,
+        stripe_payment_intent_id: typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : null,
+        stripe_subscription_id: typeof session.subscription === 'string'
+          ? session.subscription
+          : null,
         stripe_customer_id: typeof session.customer === 'string' ? session.customer : null,
         donor_name: donorName,
         donor_email: donorEmail,
