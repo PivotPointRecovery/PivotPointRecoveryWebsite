@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pivot Point Recovery — Building a Recovery-Centered Community in Northern Virginia</title>
+  <meta name="description" content="Pivot Point Recovery provides peer-led recovery support, clinical services, and wraparound care for individuals impacted by substance use in Northern Virginia.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Analytics — public marketing pages ONLY. Per the compliance bar in CLAUDE.md §5,
+       these tags must NEVER be added to authenticated portal pages because of 42 CFR
+       Part 2 + HIPAA exposure. Both load only when the corresponding ID is set on
+       window.__PPR_ANALYTICS at build/publish time.
+
+       To enable: edit the line below with your actual IDs, OR replace this script
+       with a separate `<script src="/analytics-config.js"></script>` that sets
+       window.__PPR_ANALYTICS to {GA4_ID: 'G-XXX', META_PIXEL_ID: '123'}. Keep the
+       config file out of source control if you'd rather not commit the IDs. -->
+  <script>
+    window.__PPR_ANALYTICS = {
+      // GA4_ID: 'G-XXXXXXXXXX',
+      // META_PIXEL_ID: '0000000000',
+    };
+  </script>
+  <script>
+    (function () {
+      var cfg = window.__PPR_ANALYTICS || {};
+      // Google Analytics 4 (gtag.js)
+      if (cfg.GA4_ID) {
+        var gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + cfg.GA4_ID;
+        document.head.appendChild(gaScript);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){window.dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', cfg.GA4_ID);
+      }
+      // Meta Pixel
+      if (cfg.META_PIXEL_ID) {
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+        (window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', cfg.META_PIXEL_ID);
+        fbq('track', 'PageView');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img class="nav-logo-img nav-logo-white" src="/logo-white.svg" alt="Pivot Point Recovery">
+        <img class="nav-logo-img nav-logo-teal" src="/logo-color.svg" alt="Pivot Point Recovery">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/" class="active">Home</a></li>
+        <li><a href="/about">Our Story</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/resources" class="nav-resources">Find Local Resources</a></li>
+        <li><a href="/get-involved">Get Involved</a></li>
+        <li><a href="/volunteer" class="nav-volunteer">Volunteer</a></li>
+        <li><a href="/donate" class="nav-donate">Donate</a></li>
+        <li><a href="/contact" class="nav-cta">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-bg">
+      <img src="https://images.pexels.com/photos/5710923/pexels-photo-5710923.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="People attending a group therapy and recovery meeting" loading="eager">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">Northern Virginia</div>
+      <h1 class="hero-title">Recovery becomes possible when people are truly <em>seen, supported,</em> and <em>valued.</em></h1>
+      <p class="hero-tagline">A community response to a personal crisis</p>
+      <p class="hero-subtitle">Pivot Point Recovery is a peer-led, community-based recovery hub providing clinical services, mentorship, and wraparound support.</p>
+      <div class="hero-actions">
+        <a href="/get-involved" class="btn btn-primary">Support Our Mission</a>
+        <a href="/about" class="btn btn-ghost">Read Our Story</a>
+      </div>
+    </div>
+    <div class="hero-scroll"><span>Scroll</span><div class="scroll-line"></div></div>
+  </header>
+
+  <section class="impact-strip">
+    <div class="container">
+      <div class="impact-items">
+        <div class="impact-item"><span class="impact-number">30+</span><span class="impact-label">Years of Lived Experience</span></div>
+        <div class="impact-divider"></div>
+        <div class="impact-item"><span class="impact-number">4</span><span class="impact-label">Integrated Service Areas</span></div>
+        <div class="impact-divider"></div>
+        <div class="impact-item"><span class="impact-number">1</span><span class="impact-label">Mission: Recovery for All</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mission">
+    <div class="container">
+      <div class="split-section">
+        <div class="split-image"><img src="https://images.pexels.com/photos/5336963/pexels-photo-5336963.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Psychologist having an engaged conversation with a patient during a counseling session" loading="lazy"></div>
+        <div class="split-content">
+          <p class="section-label">Our Mission</p>
+          <h2 class="section-title">Building a compassionate, recovery-centered community</h2>
+          <p>Pivot Point Recovery exists to provide recovery-oriented, community-based services for individuals impacted by substance use disorders, trauma, justice involvement, and related life disruptions — through an integrated model of clinical services, peer-led support, and reintegration assistance.</p>
+          <a href="/about" class="btn btn-outline">Learn Our Story</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="need">
+    <div class="container">
+      <div class="section-header center">
+        <p class="section-label">The Challenge</p>
+        <h2 class="section-title">Northern Virginia needs local recovery infrastructure</h2>
+        <p>Despite its prosperity, Northern Virginia faces a growing addiction and overdose crisis — with limited local resources to match.</p>
+      </div>
+      <div class="card-row">
+        <div class="image-card">
+          <div class="image-card-img"><img src="https://images.pexels.com/photos/5711170/pexels-photo-5711170.jpeg?auto=compress&cs=tinysrgb&w=600" alt="People sharing experiences in a group therapy session" loading="lazy"></div>
+          <div class="image-card-body">
+            <h3>Residents Leave for Treatment</h3>
+            <p>Many residents are forced to leave the county for recovery, separating them from the connections that sustain healing.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-card-img"><img src="https://images.pexels.com/photos/3635945/pexels-photo-3635945.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Man sitting alone on a bench in deep thought" loading="lazy"></div>
+          <div class="image-card-body">
+            <h3>Reentry Without Support</h3>
+            <p>Justice-involved individuals return without stable housing, employment, or recovery networks — increasing relapse risk.</p>
+          </div>
+        </div>
+        <div class="image-card">
+          <div class="image-card-img"><img src="https://images.pexels.com/photos/7176305/pexels-photo-7176305.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Woman speaking during a group recovery meeting" loading="lazy"></div>
+          <div class="image-card-body">
+            <h3>Recovery Works Locally</h3>
+            <p>Peer-led programs increase engagement, retention, and outcomes. Local recovery makes entire communities stronger.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote-banner">
+    <div class="quote-bg"><img src="https://images.pexels.com/photos/3184423/pexels-photo-3184423.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="" loading="lazy"><div class="quote-overlay"></div></div>
+    <div class="container">
+      <blockquote><p>"People are more than their worst moments."</p><cite>Steve Turner, Founder &amp; Certified Peer Recovery Specialist</cite></blockquote>
+    </div>
+  </section>
+
+  <section class="services-section">
+    <div class="container">
+      <div class="section-header center">
+        <p class="section-label">What We Provide</p>
+        <h2 class="section-title">An Integrated Continuum of Care</h2>
+        <p>From the moment someone asks for help to the day they stand on their own.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Peer-Led Recovery Programs</h3><p>Recovery coaching, group support, and leadership pathways led by specialists with lived experience.</p></div>
+        <div class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><h3>Recovery Navigation</h3><p>Case management connecting individuals to housing, employment, education, and community resources.</p></div>
+        <div class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><h3>Reentry &amp; Reintegration</h3><p>Targeted support for justice-involved individuals transitioning back with stability and accountability.</p></div>
+        <div class="service-card featured"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><h3>Family &amp; Community</h3><p>Building recovery-friendly networks and reducing stigma across Northern Virginia.</p></div>
+      </div>
+      <div class="section-cta"><a href="/services" class="btn btn-blue">Explore All Services</a></div>
+    </div>
+  </section>
+
+  <section class="why-local">
+    <div class="container">
+      <div class="split-section reverse">
+        <div class="split-image"><img src="https://images.pexels.com/photos/7964374/pexels-photo-7964374.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Close-up of supportive hand-holding during recovery" loading="lazy"></div>
+        <div class="split-content">
+          <p class="section-label">Why Local Matters</p>
+          <h2 class="section-title">Recovery is most sustainable when people heal within their own communities</h2>
+          <p>Staying local allows people to maintain family connections, continue employment, and build sober routines where they live.</p>
+          <div class="check-list">
+            <div class="check-item"><span class="check-mark">&#10003;</span><p>Continuity of care from treatment through long-term recovery</p></div>
+            <div class="check-item"><span class="check-mark">&#10003;</span><p>Maintained family connections and employment stability</p></div>
+            <div class="check-item"><span class="check-mark">&#10003;</span><p>Reduced relapse risk through community-based support</p></div>
+            <div class="check-item"><span class="check-mark">&#10003;</span><p>Normalized recovery that reduces stigma for everyone</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-banner">
+        <img src="https://images.pexels.com/photos/6129493/pexels-photo-6129493.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="" class="cta-bg-img" loading="lazy">
+        <div class="cta-overlay"></div>
+        <div class="cta-content">
+          <h2>Help Us Build a Recovery-Centered Northern Virginia</h2>
+          <p>Every individual who achieves stable recovery contributes to safer neighborhoods, healthier families, and a stronger community.</p>
+          <div class="cta-actions">
+            <a href="/get-involved" class="btn btn-primary btn-large">Get Involved</a>
+            <a href="/contact" class="btn btn-ghost btn-large">Contact Us</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo-link">
+            <img class="footer-logo-img" src="/logo-white.svg" alt="Pivot Point Recovery">
+          </a>
+          <p>Building a compassionate, recovery-centered community in Northern Virginia.</p>
+          <p class="footer-org-type">501(c)(3) Nonprofit Organization</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/portal">PPR Login</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Crisis Resources</h4>
+          <ul><li><a href="tel:988">988 Suicide &amp; Crisis Lifeline</a></li><li><a href="tel:18006624357">SAMHSA: 1-800-662-4357</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <p>Northern Virginia</p>
+          <a href="/contact" class="btn btn-outline btn-small">Send a Message</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pivot Point Recovery. All rights reserved.</p>
+        <p class="photo-credit">Photos by <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a></p>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>
