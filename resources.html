@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources — Pivot Point Recovery</title>
+  <meta name="description" content="Search recovery, reentry, and veteran resources across Northern Virginia. Find help by clicking keywords related to the services you need.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img class="nav-logo-img nav-logo-white" src="/logo-white.svg" alt="Pivot Point Recovery">
+        <img class="nav-logo-img nav-logo-teal" src="/logo-color.svg" alt="Pivot Point Recovery">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">Our Story</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/resources" class="nav-resources active">Find Local Resources</a></li>
+        <li><a href="/get-involved">Get Involved</a></li>
+        <li><a href="/volunteer" class="nav-volunteer">Volunteer</a></li>
+        <li><a href="/donate" class="nav-donate">Donate</a></li>
+        <li><a href="/contact" class="nav-cta">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-bg">
+      <img src="https://images.pexels.com/photos/3184423/pexels-photo-3184423.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="People collaborating around a table" loading="eager">
+      <div class="page-hero-overlay"></div>
+    </div>
+    <div class="container">
+      <p class="section-label">Find Help</p>
+      <h1 class="section-title">Resource Directory</h1>
+      <p>Search recovery, reentry, and veteran resources across Northern Virginia. Click a keyword to filter by the services you need.</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container">
+
+      <div class="resource-search-bar">
+        <input type="text" id="resourceSearch" placeholder="Search by name, service, or keyword..." aria-label="Search resources">
+      </div>
+
+      <div class="resource-location-filters">
+        <div class="resource-location-row">
+          <div class="resource-location-field">
+            <label for="zipcodeSearch">Zip Code</label>
+            <input type="text" id="zipcodeSearch" placeholder="e.g. 22030" maxlength="5" pattern="[0-9]*" inputmode="numeric" aria-label="Search by zip code">
+          </div>
+          <div class="resource-location-field">
+            <label for="countySearch">County / City</label>
+            <select id="countySearch" aria-label="Filter by county or city">
+              <option value="">All Counties &amp; Cities</option>
+              <option value="Alexandria">Alexandria (City)</option>
+              <option value="Arlington">Arlington County</option>
+              <option value="Fairfax County">Fairfax County</option>
+              <option value="Fairfax City">Fairfax (City)</option>
+              <option value="Falls Church">Falls Church (City)</option>
+              <option value="Loudoun">Loudoun County</option>
+              <option value="Manassas">Manassas (City)</option>
+              <option value="Prince William">Prince William County</option>
+              <option value="Fauquier">Fauquier County</option>
+              <option value="Washington DC">Washington DC</option>
+              <option value="Regional">Regional / Multiple Locations</option>
+            </select>
+          </div>
+          <button class="btn btn-small btn-outline" id="clearLocationFilters" style="align-self:flex-end;margin-bottom:2px;">Clear</button>
+        </div>
+      </div>
+
+      <div class="resource-tags" id="resourceTags">
+        <button class="resource-tag active" data-tag="all">All Resources</button>
+        <button class="resource-tag" data-tag="recovery">Recovery</button>
+        <button class="resource-tag" data-tag="treatment">Treatment</button>
+        <button class="resource-tag" data-tag="peer-support">Peer Support</button>
+        <button class="resource-tag" data-tag="mental-health">Mental Health</button>
+        <button class="resource-tag" data-tag="housing">Housing</button>
+        <button class="resource-tag" data-tag="employment">Employment</button>
+        <button class="resource-tag" data-tag="reentry">Reentry</button>
+        <button class="resource-tag" data-tag="legal">Legal Aid</button>
+        <button class="resource-tag" data-tag="veterans">Veterans</button>
+        <button class="resource-tag" data-tag="harm-reduction">Harm Reduction</button>
+        <button class="resource-tag" data-tag="sober-living">Sober Living</button>
+        <button class="resource-tag" data-tag="family">Family Support</button>
+        <button class="resource-tag" data-tag="youth">Youth</button>
+        <button class="resource-tag" data-tag="crisis">Crisis Services</button>
+        <button class="resource-tag" data-tag="food-clothing">Food &amp; Clothing</button>
+        <button class="resource-tag" data-tag="counseling">Counseling</button>
+        <button class="resource-tag" data-tag="case-management">Case Management</button>
+        <button class="resource-tag" data-tag="domestic-violence">Domestic Violence</button>
+        <button class="resource-tag" data-tag="energy-assistance">Energy Assistance</button>
+      </div>
+
+      <p class="resource-count" id="resourceCount"></p>
+
+      <div class="resource-grid" id="resourceGrid">
+
+        <!-- ===== SUBSTANCE ABUSE & RECOVERY ===== -->
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,counseling,case-management" data-zipcode="22035" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Fairfax-Falls Church Community Services Board</h3>
+          <p>Comprehensive behavioral health services including substance use disorder treatment, mental health counseling, crisis intervention, and case management for Fairfax County residents.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.fairfaxcounty.gov/community-services-board/" target="_blank" rel="noopener">fairfaxcounty.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=12011+Government+Center+Pkwy%2C+Fairfax%2C+VA+22035" target="_blank" rel="noopener">&#x1f4cd; 12011 Government Center Pkwy, Fairfax, VA 22035</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,counseling" data-zipcode="22003" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>HealthWorks for Northern Virginia</h3>
+          <p>Federally Qualified Health Center serving 21,000+ patients across multiple locations. Provides integrated behavioral health and substance use services alongside primary care.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Counseling</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://hwnova.org" target="_blank" rel="noopener">hwnova.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=7+West+Annandale+Rd%2C+Falls+Church%2C+VA+22046" target="_blank" rel="noopener">&#x1f4cd; 7 West Annandale Rd, Falls Church, VA 22046</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,counseling,youth" data-zipcode="22031" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>INOVA Kellar Center</h3>
+          <p>Outpatient behavioral health services at two locations (Fairfax and Sterling). Specializes in substance abuse treatment, psychiatric evaluation, and mental health counseling.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Counseling</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.inova.org/our-services/inova-kellar-center" target="_blank" rel="noopener">inova.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=3340+Jermantown+Rd%2C+Fairfax%2C+VA+22030" target="_blank" rel="noopener">&#x1f4cd; 3340 Jermantown Rd, Fairfax, VA 22030</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,counseling" data-zipcode="22003" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Living Free Health</h3>
+          <p>Substance use treatment services in Annandale, VA. Provides outpatient treatment and counseling for individuals seeking recovery.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Counseling</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://livingfreehealth.com" target="_blank" rel="noopener">livingfreehealth.com</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=7023+Little+River+Turnpike%2C+Annandale%2C+VA+22003" target="_blank" rel="noopener">&#x1f4cd; 7023 Little River Turnpike, Annandale, VA 22003</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,housing,sober-living" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Men's Home Alexandria</h3>
+          <p>Recovery residence for men in Alexandria since 1952. Provides structured sober living in a supportive community environment.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Sober Living</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://themenshome.org" target="_blank" rel="noopener">themenshome.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=36+S.+Quaker+Ln%2C+Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; 36 S. Quaker Ln, Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support" data-zipcode="20164" data-county="Loudoun">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Meridians Recovery</h3>
+          <p>Loudoun County's only nonprofit peer-to-peer recovery organization. Active in Sterling providing community-based peer recovery support.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://meridiansrecovery.org" target="_blank" rel="noopener">meridiansrecovery.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=46169+Westlake+Dr+#200%2C+Sterling%2C+VA+20165" target="_blank" rel="noopener">&#x1f4cd; 46169 Westlake Dr #200, Sterling, VA 20165</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support" data-county="Regional">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Narcotics Anonymous (CPRNA)</h3>
+          <p>Chesapeake/Potomac Region of Narcotics Anonymous covering Northern Virginia. Provides meeting schedules, resources, and peer support for individuals in recovery from addiction.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://cprna.org/our-areas/info/northern-virginia-area/" target="_blank" rel="noopener">cprna.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="mental-health,family,peer-support,counseling" data-zipcode="22030" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>NAMI Northern Virginia</h3>
+          <p>Local chapter of the National Alliance on Mental Illness. Provides education, support groups, and advocacy for individuals and families affected by mental illness.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Family Support</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://nami-northernvirginia.org" target="_blank" rel="noopener">nami-northernvirginia.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=10386+Democracy+Ln%2C+Fairfax%2C+VA+22030" target="_blank" rel="noopener">&#x1f4cd; 10386 Democracy Ln, Fairfax, VA 22030</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support" data-zipcode="22044" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Northern Virginia Intergroup (AA)</h3>
+          <p>Central service office for 400+ AA groups and 800+ meetings per week across Northern Virginia. Connects individuals with local Alcoholics Anonymous meetings and resources.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://nvintergroup.org" target="_blank" rel="noopener">nvintergroup.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=6304+Leesburg+Pike%2C+Falls+Church%2C+VA+22044" target="_blank" rel="noopener">&#x1f4cd; 6304 Leesburg Pike, Falls Church, VA 22044</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,employment,case-management" data-zipcode="20190" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Recovery Program Solutions of Virginia</h3>
+          <p>Employment assistance, computer lab access, computer training, case management, and resource navigation for peers in recovery. Locations in Reston and Fairfax (Merrifield).</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://rpsva.org" target="_blank" rel="noopener">rpsva.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=11508+North+Shore+Dr%2C+Reston%2C+VA+20190" target="_blank" rel="noopener">&#x1f4cd; 11508 North Shore Dr, Reston, VA 20190</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,case-management" data-zipcode="22306" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>South County Recovery Center</h3>
+          <p>Recovery center operated by Recovery Program Solutions in South Fairfax County. Provides peer support, case management, and recovery resources.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://rpsva.org/recovery-centers/south-county/" target="_blank" rel="noopener">rpsva.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=8350+Richmond+Hwy%2C+Suite+225%2C+Alexandria%2C+VA+22309" target="_blank" rel="noopener">&#x1f4cd; 8350 Richmond Hwy, Suite 225, Alexandria, VA 22309</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,family" data-zipcode="20110" data-county="Prince William">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Al-Anon Northern Virginia</h3>
+          <p>Support groups for families and friends of individuals struggling with alcohol use. Meetings and resources throughout Northern Virginia. Office at 8569A Sudley Rd, Manassas, VA 20110.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://alanonva.com" target="_blank" rel="noopener">alanonva.com</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=8569A+Sudley+Rd%2C+Manassas%2C+VA+20110" target="_blank" rel="noopener">&#x1f4cd; 8569A Sudley Rd, Manassas, VA 20110</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,counseling" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Alexandria Substance Abuse Services</h3>
+          <p>City of Alexandria adult behavioral health services providing substance use treatment, counseling, and community-based recovery resources.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Counseling</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.alexandriava.gov/adult-behavioral-health" target="_blank" rel="noopener">alexandriava.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=720+North+Saint+Asaph+St%2C+Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; 720 North Saint Asaph St, Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,counseling,case-management" data-zipcode="22204" data-county="Arlington">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Arlington Behavioral Healthcare Services</h3>
+          <p>Arlington County behavioral healthcare division providing substance use treatment, mental health services, crisis intervention, and case management.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.arlingtonva.us/Government/Departments/DHS/Behavioral-Healthcare" target="_blank" rel="noopener">arlingtonva.us</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=2120+Washington+Blvd%2C+Arlington%2C+VA+22204" target="_blank" rel="noopener">&#x1f4cd; 2120 Washington Blvd, Arlington, VA 22204</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,youth" data-zipcode="22042" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>INOVA CATS (Adult Substance Use Treatment)</h3>
+          <p>Comprehensive Addiction Treatment Services offering outpatient substance use disorder treatment through INOVA Health System.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.inova.org/our-services/adult-substance-use-disorder-treatment-cats" target="_blank" rel="noopener">inova.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=3300+Gallows+Rd%2C+Falls+Church%2C+VA+22042" target="_blank" rel="noopener">&#x1f4cd; 3300 Gallows Rd, Falls Church, VA 22042</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,counseling" data-zipcode="20176" data-county="Loudoun">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Loudoun County Mental Health &amp; Substance Abuse</h3>
+          <p>Loudoun County government clinics offering mental health and substance abuse treatment, counseling, and crisis services.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Mental Health</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.loudoun.gov/1408/Clinics" target="_blank" rel="noopener">loudoun.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=102+Heritage+Way+NE%2C+Leesburg%2C+VA+20176" target="_blank" rel="noopener">&#x1f4cd; 102 Heritage Way NE, Leesburg, VA 20176</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,counseling" data-zipcode="22003" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Multicultural Clinical Center</h3>
+          <p>Culturally responsive substance abuse and mental health treatment services in Northern Virginia.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Counseling</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://mccva.com" target="_blank" rel="noopener">mccva.com</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=7630+Little+River+Turnpike%2C+Suite+800%2C+Annandale%2C+VA+22003" target="_blank" rel="noopener">&#x1f4cd; 7630 Little River Turnpike, Suite 800, Annandale, VA 22003</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,case-management" data-zipcode="22192" data-county="Prince William">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Prince William County Community Services</h3>
+          <p>County behavioral health services including substance abuse treatment, mental health counseling, crisis intervention, and case management.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.pwcva.gov/department/community-services" target="_blank" rel="noopener">pwcva.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=8033+Ashton+Ave%2C+Suite+107%2C+Manassas%2C+VA+20109" target="_blank" rel="noopener">&#x1f4cd; 8033 Ashton Ave, Suite 107, Manassas, VA 20109</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,housing,sober-living" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Women's Home</h3>
+          <p>Recovery residence providing structured sober living for women in the Northern Virginia area.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Sober Living</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://thewomenshome.com" target="_blank" rel="noopener">thewomenshome.com</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,crisis,mental-health" data-zipcode="22030" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Wellness Circle Stabilization Unit (formerly Woodburn Place)</h3>
+          <p>Crisis stabilization and behavioral health services. Renamed from Woodburn Place Crisis Center and relocated to 4410 Shirley Gate Rd, Fairfax, VA 22030.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Crisis Services</span>
+            <span class="resource-card-tag">Mental Health</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.fairfaxcounty.gov/community-services-board/" target="_blank" rel="noopener">fairfaxcounty.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=4410+Shirley+Gate+Rd%2C+Fairfax%2C+VA+22030" target="_blank" rel="noopener">&#x1f4cd; 4410 Shirley Gate Rd, Fairfax, VA 22030</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,housing,sober-living,reentry" data-zipcode="22202" data-county="Arlington">
+          <div class="resource-card-category">Recovery</div>
+          <h3>VOA Chesapeake &amp; Carolinas</h3>
+          <p>Volunteers of America providing residential recovery programs, peer support, and community-based services in Northern Virginia. Formerly VOA Chesapeake RPC.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://voachesapeake.org" target="_blank" rel="noopener">voachesapeake.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=220+S+Union+St%2C+Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; 220 S Union St, Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,counseling" data-zipcode="22030" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Mason and Partners (MAP Clinics)</h3>
+          <p>George Mason University community health clinics providing accessible healthcare and behavioral health services.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Counseling</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://publichealth.gmu.edu/mapclinics" target="_blank" rel="noopener">gmu.edu</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=4400+University+Dr%2C+Fairfax%2C+VA+22030" target="_blank" rel="noopener">&#x1f4cd; 4400 University Dr, Fairfax, VA 22030</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,food-clothing,housing,employment,case-management" data-zipcode="22191" data-county="Prince William">
+          <div class="resource-card-category">Reentry</div>
+          <h3>The Street Light</h3>
+          <p>Job Readiness Program, case management, life skills, housing for homeless, transportation to interviews, and mainstream benefits applications. Woodbridge, VA.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://thestreetlight.org" target="_blank" rel="noopener">thestreetlight.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=13517+Richmond+Hwy%2C+Woodbridge%2C+VA+22191" target="_blank" rel="noopener">&#x1f4cd; 13517 Richmond Hwy, Woodbridge, VA 22191</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="food-clothing,housing,employment,case-management" data-zipcode="22192" data-county="Prince William">
+          <div class="resource-card-category">Community</div>
+          <h3>ACTS (Prince William County)</h3>
+          <p>Serves 65,700+ people annually with emergency shelter, food, housing, employment, and social services in Prince William County and surrounding areas.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://actspwc.org" target="_blank" rel="noopener">actspwc.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=4506+Linked+Ct%2C+Dumfries%2C+VA+22025" target="_blank" rel="noopener">&#x1f4cd; 4506 Linked Ct, Dumfries, VA 22025</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,food-clothing" data-zipcode="22153" data-county="Fairfax County">
+          <div class="resource-card-category">Community</div>
+          <h3>Messiah UMC</h3>
+          <p>Active church community providing recovery-related programs and community support services.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://messiahumc.org" target="_blank" rel="noopener">messiahumc.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=6215+Rolling+Rd%2C+Springfield%2C+VA+22152" target="_blank" rel="noopener">&#x1f4cd; 6215 Rolling Rd, Springfield, VA 22152</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support" data-zipcode="22030" data-county="Fairfax County">
+          <div class="resource-card-category">Community</div>
+          <h3>St. Stephens UMC</h3>
+          <p>Church community in Fairfax offering recovery-related programs and community outreach.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://ststephensfairfax.org" target="_blank" rel="noopener">ststephensfairfax.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=9203+Braddock+Rd%2C+Burke%2C+VA+22015" target="_blank" rel="noopener">&#x1f4cd; 9203 Braddock Rd, Burke, VA 22015</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,reentry,housing,employment" data-zipcode="22192" data-county="Prince William">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Salvation Army &mdash; Prince William</h3>
+          <p>Social services including emergency assistance, housing support, and employment programs in Prince William County.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://southernusa.salvationarmy.org/nca/" target="_blank" rel="noopener">salvationarmy.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=9425+Mathy+Dr%2C+Fairfax%2C+VA+22031" target="_blank" rel="noopener">&#x1f4cd; 9425 Mathy Dr, Fairfax, VA 22031</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,housing,employment,food-clothing" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Community</div>
+          <h3>Salvation Army &mdash; Alexandria</h3>
+          <p>Emergency assistance, housing, employment, and community services in Alexandria, VA.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://southernusa.salvationarmy.org/nca/alexandria" target="_blank" rel="noopener">salvationarmy.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=1804+Mount+Vernon+Ave%2C+Alexandria%2C+VA+22301" target="_blank" rel="noopener">&#x1f4cd; 1804 Mount Vernon Ave, Alexandria, VA 22301</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,housing,employment,food-clothing" data-zipcode="22031" data-county="Fairfax County">
+          <div class="resource-card-category">Community</div>
+          <h3>Salvation Army &mdash; Fairfax</h3>
+          <p>Emergency assistance, housing, employment, and community services in Fairfax County.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://salvationarmynca.org/nca/fairfax" target="_blank" rel="noopener">salvationarmy.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=9477+Mathy+Dr%2C+Fairfax%2C+VA+22031" target="_blank" rel="noopener">&#x1f4cd; 9477 Mathy Dr, Fairfax, VA 22031</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="harm-reduction,peer-support" data-zipcode="20002" data-county="Washington DC">
+          <div class="resource-card-category">Recovery</div>
+          <h3>HIPS</h3>
+          <p>Harm reduction services and peer support. Based in Washington DC (906 H St NE) but serves the broader DMV region including Northern Virginia. Active social media presence.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Harm Reduction</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://hips.org" target="_blank" rel="noopener">hips.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=906+H+St+NE%2C+Washington%2C+DC+20002" target="_blank" rel="noopener">&#x1f4cd; 906 H St NE, Washington, DC 20002</a>
+          </div>
+        </div>
+
+        <!-- ===== NEW: SUBSTANCE ABUSE & RECOVERY (Task 2A) ===== -->
+
+        <div class="resource-card" data-tags="recovery,treatment,housing,sober-living,youth,family,case-management" data-zipcode="22203" data-county="Arlington">
+          <div class="resource-card-category">Recovery</div>
+          <h3>National Capital Treatment &amp; Recovery (NCTR)</h3>
+          <p>Full continuum of SUD treatment: Phoenix Program (men, 64 beds), Demeter House (women, 20 beds), Arlington Recovery Center (detox), Independence House, outpatient MAT counseling, adolescent services, and family programs. CARF-accredited; 2,500+ served annually.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Youth</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>200 N. Glebe Rd, Suite 104, Arlington &bull; (703) 841-0703</span>
+            <a href="https://www.natcaptreatment.org/" target="_blank" rel="noopener">natcaptreatment.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=200+N.+Glebe+Rd%2C+Suite+104%2C+Arlington%2C+VA+22203" target="_blank" rel="noopener">&#x1f4cd; 200 N. Glebe Rd, Suite 104, Arlington, VA 22203</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,harm-reduction,housing,family,reentry" data-zipcode="20190" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>The Chris Atwood Foundation (The CAF)</h3>
+          <p>Peer recovery support (Revive to Thrive), recovery community center, recovery housing grants, NoVA's first mobile comprehensive harm reduction van, HOPE Program for justice-involved individuals, Peer Recovery Academy, and family education. Distributed 134,000+ naloxone doses.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Harm Reduction</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Family Support</span>
+            <span class="resource-card-tag">Reentry</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Reston / Fairfax &bull; (703) 653-4221 (warm line)</span>
+            <a href="https://www.thecaf.org/" target="_blank" rel="noopener">thecaf.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=1886+Metro+Center+Dr+#220%2C+Reston%2C+VA+20190" target="_blank" rel="noopener">&#x1f4cd; 1886 Metro Center Dr #220, Reston, VA 20190</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,housing,sober-living,peer-support" data-zipcode="20176" data-county="Loudoun">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Loudoun Serenity House</h3>
+          <p>Two VARR/DBHDS-certified Level 2 transitional recovery residences (women's and men's houses), recovery community center with free peer mentoring, skill-building workshops, and recovery coaching. Served 1,800+ individuals since 2020.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Sober Living</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>29 N. King St, Leesburg, VA</span>
+            <a href="https://www.loudounserenity.org/" target="_blank" rel="noopener">loudounserenity.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=29+N.+King+St%2C+Leesburg%2C+VA+20176" target="_blank" rel="noopener">&#x1f4cd; 29 N. King St, Leesburg, VA 20176</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,mental-health,crisis,employment,housing,family,peer-support,case-management" data-zipcode="22124" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>HopeLink Behavioral Health</h3>
+          <p>Recovery Academy (12-week psychoeducation for mental illness and co-occurring SUD), community support services, employment, housing programs, CrisisLink (24/7 regional crisis line operating 988 for NoVA), mobile crisis units, and youth transition programs. CARF-accredited; founded 1963.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Crisis Services</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Oakton, Alexandria, Fairfax &bull; (703) 531-6300</span>
+            <a href="https://hopelinkbh.org/" target="_blank" rel="noopener">hopelinkbh.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=2900+Telestar+Ct%2C+Falls+Church%2C+VA+22042" target="_blank" rel="noopener">&#x1f4cd; 2900 Telestar Ct, Falls Church, VA 22042</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,housing,sober-living,peer-support" data-county="Regional">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Oxford Houses of Virginia</h3>
+          <p>Self-sustaining, democratically run sober living homes across Northern Virginia. No time limit on stay (average ~1 year). Structured peer accountability. All houses are VARR-certified recovery residences.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Sober Living</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Multiple locations across NoVA</span>
+            <a href="https://www.vaoxfordhouse.org/" target="_blank" rel="noopener">vaoxfordhouse.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,counseling,family,housing,food-clothing" data-zipcode="22203" data-county="Arlington">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Catholic Charities of the Diocese of Arlington</h3>
+          <p>Substance abuse counseling (individual, couples, family), addiction ministry, Christ House transitional shelter with SUD counseling, clinical family support, and emergency assistance. Open to all faiths; sliding scale fees. Serves 21 counties.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Family Support</span>
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Arlington, Fairfax, Sterling, Leesburg, Vienna &bull; (703) 841-2531</span>
+            <a href="https://ccda.net/" target="_blank" rel="noopener">ccda.net</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=200+N.+Glebe+Rd%2C+Suite+250%2C+Arlington%2C+VA+22203" target="_blank" rel="noopener">&#x1f4cd; 200 N. Glebe Rd, Suite 250, Arlington, VA 22203</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,counseling,employment,housing,case-management,family" data-zipcode="20110" data-county="Prince William">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Northern Virginia Family Service (NVFS)</h3>
+          <p>Counseling including substance abuse, health access and insurance navigation, housing assistance, crisis intervention, employment training, and resource navigation. Serves 40,000+ individuals annually with staff speaking 11+ languages.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Manassas, Fairfax &amp; more &bull; (571) 748-2500</span>
+            <a href="https://www.nvfs.org/" target="_blank" rel="noopener">nvfs.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=10455+White+Granite+Dr%2C+Suite+100%2C+Oakton%2C+VA+22124" target="_blank" rel="noopener">&#x1f4cd; 10455 White Granite Dr, Suite 100, Oakton, VA 22124</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,youth,family" data-zipcode="20136" data-county="Prince William">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Youth For Tomorrow</h3>
+          <p>SUD assessments and treatment, outpatient substance abuse treatment (individual, group, family), co-occurring disorder treatment, substance abuse prevention, and residential programs for at-risk youth. Founded by Coach Joe Gibbs; faith-based 501(c)(3) since 1986.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Youth</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Bristow &amp; Woodbridge &bull; (703) 659-9900</span>
+            <a href="https://www.youthfortomorrow.org/" target="_blank" rel="noopener">youthfortomorrow.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=11835+Hazel+Circle+Dr%2C+Bristow%2C+VA+20136" target="_blank" rel="noopener">&#x1f4cd; 11835 Hazel Circle Dr, Bristow, VA 20136</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,family,youth" data-zipcode="20187" data-county="Fauquier">
+          <div class="resource-card-category">Recovery</div>
+          <h3>SpiritWorks Foundation</h3>
+          <p>Recovery community centers, recovery coaching, recovery management, family and youth programs, faith community leader training, and weekly meetings (NA, Celebrate Recovery, Families Anonymous, Women in Recovery). Free services; peer-led 501(c)(3).</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Family Support</span>
+            <span class="resource-card-tag">Youth</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Warrenton, VA &bull; (540) 428-5415</span>
+            <a href="https://www.spiritworksfoundation.org/" target="_blank" rel="noopener">spiritworksfoundation.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=83+W+Lee+Hwy%2C+Warrenton%2C+VA+20186" target="_blank" rel="noopener">&#x1f4cd; 83 W Lee Hwy, Warrenton, VA 20186</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,peer-support,crisis" data-zipcode="22030" data-county="Fairfax County">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Fairfax County Peer Outreach Response Team (PORT)</h3>
+          <p>Peer support specialists providing community outreach, connecting individuals to substance use treatment resources, and crisis response support for Fairfax County residents.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Crisis Services</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Fairfax County &bull; (703) 559-3199</span>
+          </div>
+        </div>
+
+        <!-- ===== REENTRY SERVICES (Task 2B) ===== -->
+
+        <div class="resource-card" data-tags="reentry,housing,employment,case-management,family" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Friends of Guest House</h3>
+          <p>Women-only reentry program: 6-month residential, aftercare, workforce and life development training, mentoring, and case management through &ldquo;5 Pillars of Livability.&rdquo; Only 15% recidivism rate among graduates. Founded 1974; served 5,000+ women.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>120 S. Payne St, Alexandria &bull; (703) 549-8072</span>
+            <a href="https://friendsofguesthouse.org/" target="_blank" rel="noopener">friendsofguesthouse.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=120+S.+Payne+St%2C+Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; 120 S. Payne St, Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,employment,housing,case-management,family" data-zipcode="22192" data-county="Prince William">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Virginia CARES</h3>
+          <p>Pre-release reentry planning and post-release services: emergency help with food, clothing, housing, transportation, and ID; job search skills training; employment placement; one-to-one counseling; career building; family reunification; cognitive-behavioral programming.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Prince William / Fauquier / Culpeper &bull; (540) 317-1439</span>
+            <a href="https://www.vacares.org/" target="_blank" rel="noopener">vacares.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,legal,housing,employment,veterans" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Legal Aid</div>
+          <h3>Legal Services of Northern Virginia (LSNV)</h3>
+          <p>Free civil legal services including expungement/record-sealing through &ldquo;Second Chances Initiative,&rdquo; housing law, consumer law, public benefits, employment disputes, and veterans law. Offices across NoVA.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Legal Aid</span>
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Arlington, Fairfax, Alexandria, Loudoun, Prince William &bull; (703) 778-6800</span>
+            <a href="https://lsnv.org/" target="_blank" rel="noopener">lsnv.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=6400+Arlington+Blvd%2C+Suite+600%2C+Falls+Church%2C+VA+22042" target="_blank" rel="noopener">&#x1f4cd; 6400 Arlington Blvd, Suite 600, Falls Church, VA 22042</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,legal" data-zipcode="22044" data-county="Falls Church">
+          <div class="resource-card-category">Legal Aid</div>
+          <h3>Legal Aid Justice Center (LAJC)</h3>
+          <p>Expungement clinics, criminal record sealing assistance, fines/fees reform advocacy, pretrial justice work, housing, immigration, and workplace rights. Virginia's expanded record-sealing law takes effect July 1, 2026.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Legal Aid</span>
+            <span class="resource-card-tag">Reentry</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>6066 Leesburg Pike, Suite 520, Falls Church &bull; (703) 778-3450</span>
+            <a href="https://www.justice4all.org/" target="_blank" rel="noopener">justice4all.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=6066+Leesburg+Pike%2C+Suite+520%2C+Falls+Church%2C+VA+22044" target="_blank" rel="noopener">&#x1f4cd; 6066 Leesburg Pike, Suite 520, Falls Church, VA 22044</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,housing,employment,counseling,case-management,food-clothing" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Christ House (Catholic Charities)</h3>
+          <p>Transitional housing for 14&ndash;17 homeless men (12&ndash;18 months), intensive case management, workforce development, job coaching, financial literacy, resume/interview coaching, psychological counseling, life skills, daily meals, and food pantry.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>131 S. West St, Alexandria &bull; (703) 549-8644</span>
+            <a href="https://www.ccda.net/need-help/housing/men-s-housing-(christ-house)/" target="_blank" rel="noopener">ccda.net</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=131+S.+West+St%2C+Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; 131 S. West St, Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,employment" data-zipcode="22003" data-county="Fairfax County">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Virginia Career Works &mdash; Northern Region</h3>
+          <p>Dedicated reentry resources: free computer access, resume development, job search assistance, interview prep, career guidance, training/certification funding, background check guidance, Federal Bonding Program, and apprenticeship connections.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Annandale, Alexandria, Reston, Leesburg, Woodbridge</span>
+            <a href="https://vcwnorthern.com/jobseekers/reentry-resources/" target="_blank" rel="noopener">vcwnorthern.com</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=7611+Little+River+Turnpike%2C+Suite+300W%2C+Annandale%2C+VA+22003" target="_blank" rel="noopener">&#x1f4cd; 7611 Little River Turnpike, Suite 300W, Annandale, VA 22003</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,employment,case-management" data-zipcode="22306" data-county="Fairfax County">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Good Shepherd Housing and Family Services</h3>
+          <p>Affordable rental housing for individuals who cannot find housing due to bad credit, rental history, or criminal background. Manages 100+ housing units along Route 1 corridor in South Fairfax County. Case management, budgeting, employment assistance.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>8305 Richmond Hwy, Alexandria &bull; (703) 768-9404</span>
+            <a href="https://goodhousing.org/" target="_blank" rel="noopener">goodhousing.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=8305+Richmond+Hwy%2C+Alexandria%2C+VA+22309" target="_blank" rel="noopener">&#x1f4cd; 8305 Richmond Hwy, Alexandria, VA 22309</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,employment" data-zipcode="20024" data-county="Washington DC">
+          <div class="resource-card-category">Reentry</div>
+          <h3>DC Central Kitchen</h3>
+          <p>12&ndash;14 week Culinary Job Training program for adults facing employment barriers including incarceration, homelessness, and addiction. Includes hands-on culinary training, ServSafe certification, and 160 hours of paid internship. 86% job placement rate; 2,000+ graduates.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>2121 First St SW, Washington DC &bull; (202) 234-0707</span>
+            <a href="https://dccentralkitchen.org/" target="_blank" rel="noopener">dccentralkitchen.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=2121+First+St+SW%2C+Washington%2C+DC+20024" target="_blank" rel="noopener">&#x1f4cd; 2121 First St SW, Washington, DC 20024</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,employment,mental-health,recovery,case-management" data-zipcode="22201" data-county="Arlington">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Arlington County Reentry Committee</h3>
+          <p>Supportive services for transitioning from jail to community: identification cards, mental health services, substance abuse treatment referrals, employment training (Inmate Work Program), and community resource connections.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Arlington &bull; (703) 228-4470</span>
+            <a href="https://www.arlingtonva.us/Government/Departments/Sheriffs-Office/Correctional-Division/Inmate-Services-Programs/Reentry-Committee" target="_blank" rel="noopener">arlingtonva.us</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=1425+N.+Courthouse+Rd%2C+Arlington%2C+VA+22201" target="_blank" rel="noopener">&#x1f4cd; 1425 N. Courthouse Rd, Arlington, VA 22201</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,employment,case-management" data-zipcode="20176" data-county="Loudoun">
+          <div class="resource-card-category">Reentry</div>
+          <h3>Loudoun County Re-Entry Advisory Council</h3>
+          <p>Government coalition coordinating reentry services: transition planning, employment opportunities, survival needs, skill-based services, and connections to agencies and programs for Loudoun County residents.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Loudoun County &bull; (703) 777-0420</span>
+            <a href="https://sheriff.loudoun.gov/4010/Reentry-Advisory-Council" target="_blank" rel="noopener">loudoun.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=Leesburg%2C+VA+20176" target="_blank" rel="noopener">&#x1f4cd; Leesburg, VA 20176</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,case-management,reentry,mental-health" data-zipcode="22201" data-county="Arlington">
+          <div class="resource-card-category">Reentry</div>
+          <h3>PathForward (formerly A-SPAN)</h3>
+          <p>Permanent supportive housing, rapid rehousing, and case management for individuals experiencing homelessness including formerly incarcerated individuals. Maintains ~125 apartments with weekly case management visits and mental health provider connections.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Mental Health</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>2020 14th St N, Suite 450, Arlington &bull; (703) 228-7803</span>
+            <a href="https://pfva.org/" target="_blank" rel="noopener">pfva.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=2020+14th+St+N%2C+Suite+450%2C+Arlington%2C+VA+22201" target="_blank" rel="noopener">&#x1f4cd; 2020 14th St N, Suite 450, Arlington, VA 22201</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="reentry,recovery,legal" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Reentry</div>
+          <h3>SCORE Program (Federal Reentry Court)</h3>
+          <p>Second Chance Offender Rehabilitation Effort &mdash; federal reentry court program in Eastern District of Virginia. Intensive support addressing employment, housing, healthcare, education, and substance abuse treatment for individuals on federal supervision.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Reentry</span>
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Legal Aid</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.justice.gov/usao-edva/reentry-program" target="_blank" rel="noopener">justice.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=2100+Jamieson+Ave%2C+Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; 2100 Jamieson Ave, Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <!-- ===== VETERAN SERVICES (Task 2C) ===== -->
+
+        <div class="resource-card" data-tags="veterans,case-management,housing,employment" data-zipcode="20110" data-county="Manassas">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Northern Virginia Veterans Association (NOVA Veterans)</h3>
+          <p>One-stop coordinated case management for vulnerable veterans: free personal case management, warm handoffs to healthcare, food, transportation, housing, employment, legal, and benefits navigation. Partners with 68+ organizations; supported 525+ veterans and families.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Manassas, VA &bull; (703) 659-0788</span>
+            <a href="https://novavets.org/" target="_blank" rel="noopener">novavets.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=9229+Center+St%2C+Manassas%2C+VA+20110" target="_blank" rel="noopener">&#x1f4cd; 9229 Center St, Manassas, VA 20110</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,housing,employment,case-management" data-zipcode="22030" data-county="Regional">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Friendship Place &mdash; Veterans First Program</h3>
+          <p>Leading provider of rapid rehousing and homeless prevention for veterans using Housing First model. Case management, housing search assistance, benefits connections, employment help, and medical/mental health linkages. CARF-accredited.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Fairfax, Loudoun, Prince William, Arlington, Alexandria &bull; (202) 658-9599</span>
+            <a href="https://friendshipplace.org/programs-outreach/veterans-first/" target="_blank" rel="noopener">friendshipplace.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,housing,case-management,recovery" data-county="Regional">
+          <div class="resource-card-category">Veterans</div>
+          <h3>VOA Chesapeake &mdash; SSVF Veteran Services</h3>
+          <p>Supportive Services for Veteran Families (SSVF): housing-first outreach, case management, temporary financial assistance, healthcare/employment/legal referrals, childcare, transportation, life skills training, and substance use recovery referrals.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Recovery</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>(703) 679-0982</span>
+            <a href="https://www.voachesapeake.org/veteran-services/" target="_blank" rel="noopener">voachesapeake.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,housing,case-management" data-zipcode="22314" data-county="Alexandria">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Operation Renewed Hope Foundation</h3>
+          <p>Veteran-led nonprofit ending veteran homelessness: residential housing (owns and renovates homes), supportive services, transportation, and case management. Served 1,300+ veterans since 2011.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Alexandria, VA &bull; (703) 887-8117</span>
+            <a href="https://www.operationrenewedhopefoundation.org/" target="_blank" rel="noopener">operationrenewedhopefoundation.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=Alexandria%2C+VA+22314" target="_blank" rel="noopener">&#x1f4cd; Alexandria, VA 22314</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,counseling,mental-health,family,recovery" data-zipcode="22306" data-county="Fairfax County">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Alexandria VA Vet Center</h3>
+          <p>Free, confidential counseling: individual and group for PTSD, depression, grief, military sexual trauma, transition support, couples/family counseling, substance abuse referrals, VA benefits navigation, and telehealth. No VA enrollment required.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>6940 S. Kings Hwy, Suite 204, Alexandria &bull; (877) 927-8387</span>
+            <a href="https://www.va.gov/alexandria-va-vet-center/" target="_blank" rel="noopener">va.gov</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=6940+S.+Kings+Hwy%2C+Suite+204%2C+Alexandria%2C+VA+22306" target="_blank" rel="noopener">&#x1f4cd; 6940 S. Kings Hwy, Suite 204, Alexandria, VA 22306</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,counseling,mental-health" data-zipcode="20177" data-county="Loudoun">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Leesburg VA Vet Center Community Access Point</h3>
+          <p>Satellite Vet Center serving Loudoun County with PTSD counseling, military sexual trauma counseling, readjustment counseling, and referrals.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Mental Health</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>751 Miller Dr SE, Suite E, Leesburg, VA 20177</span>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=751+Miller+Dr+SE%2C+Suite+E%2C+Leesburg%2C+VA+20177" target="_blank" rel="noopener">&#x1f4cd; 751 Miller Dr SE, Suite E, Leesburg, VA 20177</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,case-management,mental-health,housing,employment" data-county="Regional">
+          <div class="resource-card-category">Veterans</div>
+          <h3>ServingTogether (EveryMind / AmericaServes)</h3>
+          <p>Coordinated care network connecting veterans and families to comprehensive services via peer navigators and Unite Us technology across 95+ organizations. Mental health, housing, emergency services, employment, recreation, education.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.everymind.org/servingtogether/" target="_blank" rel="noopener">everymind.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,legal" data-zipcode="22209" data-county="Arlington">
+          <div class="resource-card-category">Veterans</div>
+          <h3>National Veterans Legal Services Program (NVLSP)</h3>
+          <p>Free expert legal help: Lawyers Serving Warriors pro bono program for discharge upgrades, combat-related special compensation, medical retirement, TSGLI claims, burn pit claims, and VA appeals. Based in Arlington, VA.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Legal Aid</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Arlington, VA</span>
+            <a href="https://nvlsp.org/" target="_blank" rel="noopener">nvlsp.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=1600+Wilson+Blvd%2C+Suite+900%2C+Arlington%2C+VA+22209" target="_blank" rel="noopener">&#x1f4cd; 1600 Wilson Blvd, Suite 900, Arlington, VA 22209</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,legal" data-zipcode="22201" data-county="Arlington">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Mason Veterans and Servicemembers Legal Clinic (M-VETS)</h3>
+          <p>Free legal representation: VA disability appeals, discharge upgrades, military records corrections, medical/physical evaluation boards, consumer protection, family law, landlord-tenant issues. George Mason University.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Legal Aid</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>3301 Fairfax Dr, Arlington &bull; (703) 993-8214</span>
+            <a href="https://mvets.law.gmu.edu/" target="_blank" rel="noopener">gmu.edu</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=3301+Fairfax+Dr%2C+Arlington%2C+VA+22201" target="_blank" rel="noopener">&#x1f4cd; 3301 Fairfax Dr, Arlington, VA 22201</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,case-management,housing,food-clothing" data-zipcode="20106" data-county="Fauquier">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Hero's Bridge</h3>
+          <p>Only nonprofit exclusively dedicated to aging veterans (65+). Battle Buddy program, quality-of-life assessments, suicide risk screening, VA benefits connections, home safety modifications, transportation, food security, pet therapy, and social isolation prevention.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://herosbridge.org/" target="_blank" rel="noopener">herosbridge.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=170+Shenandoah+Valley+Dr%2C+Front+Royal%2C+VA+22630" target="_blank" rel="noopener">&#x1f4cd; 170 Shenandoah Valley Dr, Front Royal, VA 22630</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,employment,family,case-management" data-zipcode="22151" data-county="Fairfax County">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Hope For The Warriors</h3>
+          <p>Post-9/11 veteran and family support: case management, financial education, emergency financial support, veteran peer mentors, Warrior's Compass career transition program (1,000+ served), Drive For HOPE (driving independence, Chantilly, VA). Charity Navigator 4-star rated 11+ years.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Family Support</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Springfield, VA area</span>
+            <a href="https://www.hopeforthewarriors.org/" target="_blank" rel="noopener">hopeforthewarriors.org</a>
+            <a class="resource-card-address" href="https://www.google.com/maps/search/?api=1&query=Springfield%2C+VA+22150" target="_blank" rel="noopener">&#x1f4cd; Springfield, VA 22150</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,mental-health,peer-support,family,case-management" data-county="Regional">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Virginia Veteran and Family Support (VVFS) &mdash; North Region</h3>
+          <p>State-operated program: behavioral health assessment, rehabilitative services, peer support groups, family support groups, linkages to VA benefits, housing, employment, education. Focus on combat stress, PTSD, MST, and TBI.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>All NoVA counties &bull; 1-844-838-7838</span>
+            <a href="https://www.dvs.virginia.gov/benefits-services/veteran-and-family-support/" target="_blank" rel="noopener">dvs.virginia.gov</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="veterans,food-clothing,housing" data-county="Regional">
+          <div class="resource-card-category">Veterans</div>
+          <h3>Northern Virginia Vietnam Veterans Foundation</h3>
+          <p>Emergency financial assistance for veterans and families (rent, utilities, car repairs, food) and VASH program support. 100% of donations go to veteran assistance &mdash; all-volunteer, no paid staff.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Veterans</span>
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <a href="https://www.nvvvf.org/" target="_blank" rel="noopener">nvvvf.org</a>
+          </div>
+        </div>
+
+        <!-- ===== LOUDOUN COUNTY RESOURCES ===== -->
+
+        <div class="resource-card" data-tags="food-clothing,case-management">
+          <div class="resource-card-category">Community</div>
+          <h3>Loudoun Hunger Relief</h3>
+          <p>Loudoun County&rsquo;s primary emergency food pantry since 1991, serving 14,000+ individuals annually with 2.5 million pounds of food. Full-choice grocery market in Leesburg and mobile markets in Sterling. Families can visit weekly for fresh produce, meats, milk, eggs, baby supplies, and hygiene items.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &amp; Sterling &bull; (703) 777-5911</span>
+            <a href="https://loudounhunger.org/" target="_blank" rel="noopener">loudounhunger.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,food-clothing,energy-assistance,case-management">
+          <div class="resource-card-category">Community</div>
+          <h3>Loudoun Cares</h3>
+          <p>Central hub connecting Loudoun County residents with health and human services since 2003. Provides rent and utility assistance, eviction prevention, food, clothing, diapers, and medical care referrals. Partners with 25+ faith-based organizations to secure emergency financial aid for qualifying residents.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Energy Assistance</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; (703) 669-4636</span>
+            <a href="https://www.loudouncares.org/" target="_blank" rel="noopener">loudouncares.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="domestic-violence,housing,counseling,legal,family,crisis">
+          <div class="resource-card-category">Domestic Violence</div>
+          <h3>LAWS Domestic Violence &amp; Sexual Assault Services</h3>
+          <p>Loudoun County&rsquo;s only provider of domestic and sexual violence services. Operates a 24-hour crisis hotline, emergency shelter, therapy, legal services, support groups, court accompaniment, safety planning, and a Child Advocacy Center. All services provided at no cost. Bilingual (English/Spanish) services available.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Domestic Violence</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Legal Aid</span>
+            <span class="resource-card-tag">Crisis Services</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; 24-Hour Hotline: (703) 777-6552</span>
+            <a href="https://lcsj.org/laws/" target="_blank" rel="noopener">lcsj.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,domestic-violence,case-management,crisis">
+          <div class="resource-card-category">Housing</div>
+          <h3>Shelter House</h3>
+          <p>Community-based nonprofit providing crisis intervention, safe housing, and supportive services to individuals experiencing homelessness and victims of domestic violence in Fairfax and Loudoun counties. Operates five shelter facilities and multiple housing programs including rapid rehousing and homelessness prevention.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Domestic Violence</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Crisis Services</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Fairfax &amp; Loudoun Counties &bull; (703) 435-4940</span>
+            <a href="https://www.shelterhouse.org/" target="_blank" rel="noopener">shelterhouse.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,case-management,food-clothing">
+          <div class="resource-card-category">Housing</div>
+          <h3>Good Shepherd of Northern Virginia</h3>
+          <p>Founded in 1983, providing emergency shelter (up to 34 residents), transitional housing, case management through their &ldquo;Six Stages of Self-Sufficiency&rdquo; program, food pantry, and clothing vouchers for homeless women, children, and families in Loudoun County.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Ashburn &bull; (703) 724-1555</span>
+            <a href="https://www.goodshepherdnova.org/" target="_blank" rel="noopener">goodshepherdnova.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing">
+          <div class="resource-card-category">Housing</div>
+          <h3>Loudoun Habitat for Humanity</h3>
+          <p>Building and repairing affordable homes in Loudoun County since 1993. Partners with homebuyers earning 30&ndash;80% of area median income, offering homeownership programs, home repair services, and the Tools for Life Learning Center for financial education.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; (703) 737-6772</span>
+            <a href="https://www.loudounhabitat.org/" target="_blank" rel="noopener">loudounhabitat.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,family">
+          <div class="resource-card-category">Housing</div>
+          <h3>Windy Hill Foundation</h3>
+          <p>Providing safe, affordable housing in Loudoun and Fauquier counties since 1981. Manages 310 units housing 800+ residents with on-site programs including after-school support, family enrichment, financial coaching, and emergency fund assistance for residents.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Middleburg &bull; (540) 687-3997</span>
+            <a href="https://windyhillfoundation.org/" target="_blank" rel="noopener">windyhillfoundation.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="food-clothing,housing,energy-assistance,employment,case-management">
+          <div class="resource-card-category">Community</div>
+          <h3>The Salvation Army &mdash; Loudoun County</h3>
+          <p>Emergency assistance for Loudoun residents at or below poverty level: rental assistance, eviction prevention, utility assistance, emergency food, clothing and furniture vouchers, diapers, and case management. Also provides hot meal distribution in Sterling and Leesburg.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Energy Assistance</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; (703) 771-3371</span>
+            <a href="https://loudoun.salvationarmypotomac.org/" target="_blank" rel="noopener">salvationarmypotomac.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="food-clothing,employment,housing,family">
+          <div class="resource-card-category">Community</div>
+          <h3>Tree of Life Ministries</h3>
+          <p>Christian nonprofit encompassing 42 ministries across Leesburg, Purcellville, and Sterling. Five service branches: food insecurity, life skills (ESOL, financial literacy, job skills coaching), housing and clothing needs, health care, and emergency financial relief. Supported by 40+ local churches.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg, Purcellville &amp; Sterling</span>
+            <a href="https://www.tolministries.org/" target="_blank" rel="noopener">tolministries.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="food-clothing,domestic-violence,family">
+          <div class="resource-card-category">Community</div>
+          <h3>Women Giving Back</h3>
+          <p>Sterling-based nonprofit providing quality clothing at no cost to women and children in crisis. Serves 11,000+ individuals annually through their boutique and Community Distributor Partner network across the region. Also provides weekend meal kits for children facing food insecurity.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+            <span class="resource-card-tag">Domestic Violence</span>
+            <span class="resource-card-tag">Family Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Sterling</span>
+            <a href="https://womengivingback.org/" target="_blank" rel="noopener">womengivingback.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="employment,reentry">
+          <div class="resource-card-category">Employment</div>
+          <h3>Virginia Career Works &mdash; Loudoun</h3>
+          <p>Free employment services at the Loudoun Workforce Resource Center: computer and internet access, resume writing workshops, career coaching, job lead assistance, and occupational skills training. Federal Bonding Program available for justice-involved job seekers. LinkedIn Learning access at no cost.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Reentry</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; (703) 777-0150</span>
+            <a href="https://vcwnorthern.com/" target="_blank" rel="noopener">vcwnorthern.com</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="mental-health,peer-support,housing,case-management">
+          <div class="resource-card-category">Community</div>
+          <h3>Friends of Loudoun Mental Health</h3>
+          <p>All-volunteer nonprofit helping those disabled by mental illness through housing assistance, advocacy for improved care and resources, and promoting recovery and community awareness. Partners with Supported Living Services to address homelessness among Loudoun residents with chronic mental illness.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Peer Support</span>
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Case Management</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Loudoun County</span>
+            <a href="https://www.loudounfriends.org/" target="_blank" rel="noopener">loudounfriends.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="counseling,mental-health">
+          <div class="resource-card-category">Community</div>
+          <h3>Loudoun Free Clinic</h3>
+          <p>Federally supported clinic providing no-cost primary and specialty healthcare to low-income, uninsured adults in Loudoun County. Services include integrated behavioral health, diagnostic testing, prescription medications, and referrals. Serves 1,200+ members annually with telehealth and in-person options.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Counseling</span>
+            <span class="resource-card-tag">Mental Health</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; (703) 779-5416</span>
+            <a href="https://loudounfreeclinic.org/" target="_blank" rel="noopener">loudounfreeclinic.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="recovery,treatment,mental-health,case-management,crisis,peer-support">
+          <div class="resource-card-category">Recovery</div>
+          <h3>Loudoun County MHSADS</h3>
+          <p>Department of Mental Health, Substance Abuse and Developmental Services &mdash; single point of entry for public behavioral health services. Free same-day screenings, intensive community treatment, PATH homeless outreach, forensic services, and substance abuse peer recovery support. Emergency services available 24/7.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Recovery</span>
+            <span class="resource-card-tag">Treatment</span>
+            <span class="resource-card-tag">Mental Health</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Crisis Services</span>
+            <span class="resource-card-tag">Peer Support</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &amp; Sterling &bull; (703) 771-5155 | Crisis: (703) 777-0320</span>
+            <a href="https://www.loudoun.gov/MHSADS" target="_blank" rel="noopener">loudoun.gov</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="housing,youth,case-management,employment">
+          <div class="resource-card-category">Community</div>
+          <h3>Mobile Hope</h3>
+          <p>The only Loudoun County nonprofit focused solely on homeless and at-risk youth up to age 24. Provides emergency shelter, case management, food, clothing, hygiene items, transportation, and the Full Circle Jobs Program. Intensive individualized support addressing root causes of homelessness.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Housing</span>
+            <span class="resource-card-tag">Youth</span>
+            <span class="resource-card-tag">Case Management</span>
+            <span class="resource-card-tag">Employment</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg &bull; (703) 771-1400</span>
+            <a href="https://mobile-hope.org/" target="_blank" rel="noopener">mobile-hope.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="employment,reentry">
+          <div class="resource-card-category">Employment</div>
+          <h3>Crossroads Jobs</h3>
+          <p>Free, individualized job placement and career development for unemployed or underemployed Loudoun area residents facing barriers to employment. Week-long interview and workshop series, one-on-one job counseling, and employer matching. Services in English and Spanish. 350+ placements since founding.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Employment</span>
+            <span class="resource-card-tag">Reentry</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Leesburg</span>
+            <a href="https://crossroadsjobs.org/" target="_blank" rel="noopener">crossroadsjobs.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="food-clothing">
+          <div class="resource-card-category">Community</div>
+          <h3>Dulles South Food Pantry</h3>
+          <p>Multi-faith community food pantry serving southeastern Loudoun County since 2014. Distributes 716,000+ pounds of food annually to 250+ families weekly. Also operates the Backpack Buddies program supporting 24 Loudoun County schools with weekend meal bags for students.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Food &amp; Clothing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Sterling &bull; (703) 507-2795</span>
+            <a href="https://dsfp.org/" target="_blank" rel="noopener">dsfp.org</a>
+          </div>
+        </div>
+
+        <div class="resource-card" data-tags="energy-assistance,housing">
+          <div class="resource-card-category">Community</div>
+          <h3>Loudoun County Energy Assistance</h3>
+          <p>Government program providing energy assistance to eligible low-income households through the Virginia Department of Social Services. Covers heating fuel, cooling, and crisis utility assistance. Apply online through CommonHelp or by phone. Income-based eligibility requirements apply.</p>
+          <div class="resource-card-tags">
+            <span class="resource-card-tag">Energy Assistance</span>
+            <span class="resource-card-tag">Housing</span>
+          </div>
+          <div class="resource-card-meta">
+            <span>Loudoun County &bull; (855) 635-4370</span>
+            <a href="https://www.loudoun.gov/1763/Financial-Assistance" target="_blank" rel="noopener">loudoun.gov</a>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="resource-no-results" id="noResults" style="display:none">No resources match your search. Try a different keyword or clear your filters.</p>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-banner">
+        <img src="https://images.pexels.com/photos/9065234/pexels-photo-9065234.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="" class="cta-bg-img" loading="lazy">
+        <div class="cta-overlay"></div>
+        <div class="cta-content">
+          <h2>Need Help Finding the Right Resource?</h2>
+          <p>Reach out and our team will help connect you with the right services for your situation.</p>
+          <div class="cta-actions">
+            <a href="/contact" class="btn btn-primary btn-large">Contact Us</a>
+            <a href="/services" class="btn btn-ghost btn-large">View Our Services</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo-link">
+            <img class="footer-logo-img" src="/logo-white.svg" alt="Pivot Point Recovery">
+          </a>
+          <p>Building a compassionate, recovery-centered community in Northern Virginia.</p>
+          <p class="footer-org-type">501(c)(3) Nonprofit Organization</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/portal">PPR Login</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Crisis Resources</h4>
+          <ul><li><a href="tel:988">988 Suicide &amp; Crisis Lifeline</a></li><li><a href="tel:18006624357">SAMHSA: 1-800-662-4357</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <p>Northern Virginia</p>
+          <a href="/contact" class="btn btn-outline btn-small">Send a Message</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pivot Point Recovery. All rights reserved.</p>
+        <p class="photo-credit">Photos by <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a></p>
+      </div>
+    </div>
+  </footer>
+  <script src="/main.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('resourceGrid');
+    const cards = Array.from(grid.querySelectorAll('.resource-card'));
+    const tags = document.querySelectorAll('.resource-tag');
+    const searchInput = document.getElementById('resourceSearch');
+    const zipcodeInput = document.getElementById('zipcodeSearch');
+    const countySelect = document.getElementById('countySearch');
+    const clearBtn = document.getElementById('clearLocationFilters');
+    const countEl = document.getElementById('resourceCount');
+    const noResults = document.getElementById('noResults');
+    let activeTag = 'all';
+
+    // Map of zip codes to nearby zip codes (within ~10 mile radius in NoVA)
+    const ZIP_NEIGHBORS = {
+      '22003': ['22003','22031','22041','22042','22043','22044','22046','22150','22151','22152','22153','22312'],
+      '22015': ['22015','22030','22031','22032','22033','22039','22150','22151','22152','22153'],
+      '22030': ['22030','22031','22032','22033','22035','22015','22039','22124'],
+      '22031': ['22031','22030','22032','22003','22042','22124'],
+      '22032': ['22032','22030','22031','22033','22015','22039'],
+      '22033': ['22033','22030','22032','22039','22124','20170','20171','20190','20191'],
+      '22035': ['22035','22030','22031','22032','22033'],
+      '22039': ['22039','22030','22032','22033','22015','22150','22151','22152','22153'],
+      '22041': ['22041','22003','22042','22043','22044','22046','22150','22302','22304','22312'],
+      '22042': ['22042','22003','22041','22043','22044','22046','22031','22124'],
+      '22043': ['22043','22041','22042','22044','22046','22101','22207'],
+      '22044': ['22044','22041','22042','22043','22046','22003'],
+      '22046': ['22046','22041','22042','22043','22044','22003','22101','22207'],
+      '22101': ['22101','22043','22046','22102','22182','22207'],
+      '22102': ['22102','22101','22182','22124','20170','20190'],
+      '22124': ['22124','22030','22031','22033','22042','22102','22182'],
+      '22150': ['22150','22151','22152','22003','22041','22015','22039','22312'],
+      '22151': ['22151','22150','22152','22153','22003','22015','22039'],
+      '22152': ['22152','22150','22151','22153','22015','22039'],
+      '22153': ['22153','22150','22151','22152','22015','22039'],
+      '22182': ['22182','22101','22102','22124','20170','20190'],
+      '22201': ['22201','22202','22203','22204','22205','22206','22207','22209','22211'],
+      '22202': ['22202','22201','22203','22204','22206','22301','22314'],
+      '22203': ['22203','22201','22202','22204','22205','22206','22209'],
+      '22204': ['22204','22201','22202','22203','22205','22206'],
+      '22205': ['22205','22201','22203','22204','22207','22209','22043','22046'],
+      '22206': ['22206','22201','22202','22203','22204','22301','22302','22304'],
+      '22207': ['22207','22201','22205','22209','22211','22043','22046','22101'],
+      '22209': ['22209','22201','22203','22205','22207','22211'],
+      '22211': ['22211','22201','22207','22209'],
+      '22301': ['22301','22302','22304','22314','22202','22206'],
+      '22302': ['22302','22301','22304','22312','22003','22041','22206'],
+      '22304': ['22304','22301','22302','22314','22206','22041'],
+      '22306': ['22306','22307','22308','22309','22314','22304'],
+      '22307': ['22307','22306','22308','22309','22314'],
+      '22308': ['22308','22306','22307','22309'],
+      '22309': ['22309','22306','22307','22308'],
+      '22312': ['22312','22003','22041','22150','22302','22304'],
+      '22314': ['22314','22301','22302','22304','22306','22202'],
+      '20109': ['20109','20110','20111','20112','20136','20155'],
+      '20110': ['20110','20109','20111','20112','20155'],
+      '20111': ['20111','20109','20110','20112'],
+      '20112': ['20112','20109','20110','20111','22191','22192','22193'],
+      '20136': ['20136','20109','20155','20169','20181'],
+      '20155': ['20155','20109','20110','20136','20169'],
+      '20164': ['20164','20165','20166','20170','20171','20176'],
+      '20165': ['20165','20164','20166','20170','20176'],
+      '20166': ['20166','20164','20165','20170','20171'],
+      '20170': ['20170','20171','20166','20164','20190','20191','22033','22102','22182'],
+      '20171': ['20171','20170','20166','20190','20191','22033'],
+      '20176': ['20176','20177','20164','20165','20175'],
+      '20177': ['20177','20176','20175'],
+      '20186': ['20186','20187'],
+      '20187': ['20187','20186'],
+      '20190': ['20190','20191','20170','20171','22033','22102','22124'],
+      '20191': ['20191','20190','20170','20171','22033'],
+      '22191': ['22191','22192','22193','20112'],
+      '22192': ['22192','22191','22193','20112'],
+      '22193': ['22193','22191','22192','20112'],
+      '22025': ['22025','22191','22192','22193','20112'],
+      '20002': ['20002','20001','20003','20017','20018'],
+      '20024': ['20024','20001','20003','20004'],
+    };
+
+    function updateCount(visible) {
+      countEl.textContent = 'Showing ' + visible + ' of ' + cards.length + ' resources';
+      noResults.style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    function filterCards() {
+      const query = searchInput.value.toLowerCase().trim();
+      const zipcode = zipcodeInput.value.trim();
+      const county = countySelect.value;
+      let visible = 0;
+
+      cards.forEach(card => {
+        const matchesTag = activeTag === 'all' || card.dataset.tags.split(',').includes(activeTag);
+        const text = card.textContent.toLowerCase();
+        const matchesSearch = !query || text.includes(query);
+
+        // Zipcode matching: match exact or nearby zips
+        let matchesZip = true;
+        if (zipcode.length === 5) {
+          const cardZip = card.dataset.zipcode || '';
+          const cardCounty = card.dataset.county || '';
+          if (cardCounty === 'Regional') {
+            matchesZip = true; // Regional orgs always show
+          } else if (!cardZip) {
+            matchesZip = false;
+          } else {
+            const neighbors = ZIP_NEIGHBORS[zipcode];
+            if (neighbors) {
+              matchesZip = neighbors.includes(cardZip);
+            } else {
+              matchesZip = cardZip === zipcode;
+            }
+          }
+        }
+
+        // County matching
+        let matchesCounty = true;
+        if (county) {
+          const cardCounty = card.dataset.county || '';
+          if (county === 'Regional') {
+            matchesCounty = cardCounty === 'Regional';
+          } else {
+            matchesCounty = cardCounty === county || cardCounty === 'Regional';
+          }
+        }
+
+        const show = matchesTag && matchesSearch && matchesZip && matchesCounty;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      updateCount(visible);
+    }
+
+    tags.forEach(tag => {
+      tag.addEventListener('click', () => {
+        tags.forEach(t => t.classList.remove('active'));
+        tag.classList.add('active');
+        activeTag = tag.dataset.tag;
+        filterCards();
+      });
+    });
+
+    searchInput.addEventListener('input', filterCards);
+    zipcodeInput.addEventListener('input', () => {
+      zipcodeInput.value = zipcodeInput.value.replace(/\D/g, '');
+      filterCards();
+    });
+    countySelect.addEventListener('change', filterCards);
+
+    clearBtn.addEventListener('click', () => {
+      zipcodeInput.value = '';
+      countySelect.value = '';
+      filterCards();
+    });
+
+    filterCards();
+  });
+  </script>
+</body>
+</html>

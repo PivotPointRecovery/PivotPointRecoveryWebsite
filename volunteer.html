@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer — Pivot Point Recovery</title>
+  <meta name="description" content="Volunteer with Pivot Point Recovery. Join a peer-led community building recovery support across Northern Virginia — mentoring, events, reentry support, and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img class="nav-logo-img nav-logo-white" src="/logo-white.svg" alt="Pivot Point Recovery">
+        <img class="nav-logo-img nav-logo-teal" src="/logo-color.svg" alt="Pivot Point Recovery">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">Our Story</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/resources" class="nav-resources">Find Local Resources</a></li>
+        <li><a href="/get-involved">Get Involved</a></li>
+        <li><a href="/volunteer" class="nav-volunteer active">Volunteer</a></li>
+        <li><a href="/donate" class="nav-donate">Donate</a></li>
+        <li><a href="/contact" class="nav-cta">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-bg">
+      <img src="https://images.pexels.com/photos/7176305/pexels-photo-7176305.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Volunteers gathered in a community recovery setting" loading="eager">
+      <div class="page-hero-overlay"></div>
+    </div>
+    <div class="container">
+      <p class="section-label">Volunteer</p>
+      <h1 class="section-title">Recovery Happens When People Show Up</h1>
+      <p>You don't need a clinical background to change someone's life. You need to be willing to show up — consistently, without judgment.</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="section-header center">
+        <p class="section-label">Ways to Help</p>
+        <h2 class="section-title">Where Volunteers Make a Difference</h2>
+        <p>Every role below is filled by someone who decided that a few hours a month was worth it.</p>
+      </div>
+      <div class="involve-cards">
+        <div class="involve-card">
+          <h3>Peer Recovery Support</h3>
+          <p>Walk alongside someone early in recovery. Certified training is provided — lived experience is welcome but not required.</p>
+        </div>
+        <div class="involve-card">
+          <h3>Mentoring</h3>
+          <p>Provide one-on-one guidance to participants working toward stability in housing, employment, or education.</p>
+        </div>
+        <div class="involve-card">
+          <h3>Events &amp; Outreach</h3>
+          <p>Help staff community events, recovery gatherings, and awareness campaigns across Northern Virginia.</p>
+        </div>
+        <div class="involve-card">
+          <h3>Reentry &amp; Reintegration</h3>
+          <p>Support justice-involved individuals during the critical first months after release.</p>
+        </div>
+        <div class="involve-card">
+          <h3>Administrative Support</h3>
+          <p>Behind-the-scenes help with scheduling, data, communications, and the logistics that keep programs running.</p>
+        </div>
+        <div class="involve-card">
+          <h3>Fundraising</h3>
+          <p>Help build the donor base and community partnerships that sustain free, local recovery services.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section alt">
+    <div class="container">
+      <div class="volunteer-form-section">
+        <div class="volunteer-form-header">
+          <p class="section-label">Get Started</p>
+          <h2 class="section-title">Tell Us How You'd Like to Help</h2>
+          <p>Share a little about yourself and our volunteer coordinator will follow up within 1–2 business days.</p>
+        </div>
+
+        <div class="contact-form">
+          <form id="volunteerForm" novalidate>
+            <!-- Honeypot: bots fill this, humans never see it -->
+            <div class="hp-field" aria-hidden="true">
+              <label>Leave this field blank: <input type="text" name="_honeypot" id="_honeypot" tabindex="-1" autocomplete="off"></label>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">First Name <span class="required-star">*</span></label>
+                <input type="text" id="firstName" name="firstName" required placeholder="First name">
+                <div class="form-error" id="firstNameError">Please enter your first name.</div>
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name <span class="required-star">*</span></label>
+                <input type="text" id="lastName" name="lastName" required placeholder="Last name">
+                <div class="form-error" id="lastNameError">Please enter your last name.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email Address <span class="required-star">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="you@example.com">
+                <div class="form-error" id="emailError">Please enter a valid email address.</div>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone <span class="required-star">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="(555) 123-4567">
+                <div class="form-error" id="phoneError">Please enter a phone number.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="city">City / Area</label>
+              <input type="text" id="city" name="city" placeholder="e.g. Leesburg, Loudoun County">
+            </div>
+
+            <div class="form-group">
+              <label>What are you interested in?</label>
+              <p class="field-hint">Select all that apply.</p>
+              <div class="check-group">
+                <label class="check-option"><input type="checkbox" name="interests" value="peer-support"> Peer Recovery Support</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="mentoring"> Mentoring</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="events"> Events &amp; Outreach</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="reentry"> Reentry &amp; Reintegration</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="admin"> Administrative Support</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="fundraising"> Fundraising</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="other"> Something Else</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="availability">General Availability</label>
+              <select id="availability" name="availability">
+                <option value="">Select one...</option>
+                <option value="weekdays">Weekdays</option>
+                <option value="weekends">Weekends</option>
+                <option value="evenings">Evenings</option>
+                <option value="flexible">Flexible</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="experience">Anything you'd like us to know?</label>
+              <textarea id="experience" name="experience" rows="5" placeholder="Relevant experience, why you're interested, questions you have — anything helps."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="volunteerBtn" style="width:100%;justify-content:center">Submit Interest</button>
+            <p class="form-note">Your information is kept confidential and is never shared.</p>
+          </form>
+
+          <div class="contact-success" id="volunteerSuccess">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <h2>Thank You!</h2>
+            <p>We've received your interest in volunteering. Our volunteer coordinator will reach out within 1–2 business days.</p>
+            <p style="margin-top:1.25rem"><a href="/" class="btn btn-outline btn-small">Return home</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-banner">
+        <img src="https://images.pexels.com/photos/6129493/pexels-photo-6129493.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="" class="cta-bg-img" loading="lazy">
+        <div class="cta-overlay"></div>
+        <div class="cta-content">
+          <h2>Not Sure Where You Fit?</h2>
+          <p>Reach out and we'll help you find a role that matches your time, skills, and interests.</p>
+          <div class="cta-actions">
+            <a href="/contact" class="btn btn-primary btn-large">Contact Us</a>
+            <a href="/services" class="btn btn-ghost btn-large">Explore Our Services</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo-link">
+            <img class="footer-logo-img" src="/logo-white.svg" alt="Pivot Point Recovery">
+          </a>
+          <p>Building a compassionate, recovery-centered community in Northern Virginia.</p>
+          <p class="footer-org-type">501(c)(3) Nonprofit Organization</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/portal">PPR Login</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Crisis Resources</h4>
+          <ul><li><a href="tel:988">988 Suicide &amp; Crisis Lifeline</a></li><li><a href="tel:18006624357">SAMHSA: 1-800-662-4357</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <p>Northern Virginia</p>
+          <a href="/contact" class="btn btn-outline btn-small">Send a Message</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pivot Point Recovery. All rights reserved.</p>
+        <p class="photo-credit">Photos by <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/main.js"></script>
+  <script>
+    // Same Supabase public-forms edge function the contact form uses. It
+    // validates, writes to volunteer_interests with the service role, and
+    // notifies staff via Resend (NOTIFICATION_EMAILS). CORS is pinned to
+    // pivotpointrecovery.org server-side.
+    const FORMS_ENDPOINT = 'https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms';
+
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + type + ' show';
+      setTimeout(function () { t.classList.remove('show'); }, 4000);
+    }
+    function showError(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('visible');
+      const input = el.previousElementSibling;
+      if (input && (input.tagName === 'INPUT' || input.tagName === 'SELECT' || input.tagName === 'TEXTAREA')) input.classList.add('error');
+    }
+    function hideError(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('visible');
+      const input = el.previousElementSibling;
+      if (input) input.classList.remove('error');
+    }
+
+    ['firstName', 'lastName', 'email', 'phone'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', function () { hideError(id + 'Error'); });
+    });
+
+    document.getElementById('phone').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '');
+      if (v.length > 10) v = v.slice(0, 10);
+      if (v.length >= 7) this.value = '(' + v.slice(0, 3) + ') ' + v.slice(3, 6) + '-' + v.slice(6);
+      else if (v.length >= 4) this.value = '(' + v.slice(0, 3) + ') ' + v.slice(3);
+      else if (v.length > 0) this.value = '(' + v;
+    });
+
+    document.getElementById('volunteerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const availability = document.getElementById('availability').value;
+      const experience = document.getElementById('experience').value.trim();
+      const honeypot = document.getElementById('_honeypot').value;
+      const interests = Array.prototype.slice
+        .call(document.querySelectorAll('input[name="interests"]:checked'))
+        .map(function (el) { return el.value; });
+
+      let valid = true;
+      if (!firstName) { showError('firstNameError'); valid = false; } else { hideError('firstNameError'); }
+      if (!lastName) { showError('lastNameError'); valid = false; } else { hideError('lastNameError'); }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('emailError'); valid = false; } else { hideError('emailError'); }
+      if (!phone) { showError('phoneError'); valid = false; } else { hideError('phoneError'); }
+      if (!valid) return;
+
+      const btn = document.getElementById('volunteerBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Sending…';
+
+      try {
+        const res = await fetch(FORMS_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            form_type: 'volunteer',
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: phone,
+            city: city,
+            interests: interests,
+            availability: availability,
+            experience: experience,
+            _honeypot: honeypot
+          })
+        });
+        const data = await res.json().catch(function () { return {}; });
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Failed to submit your interest');
+        }
+
+        document.getElementById('volunteerForm').style.display = 'none';
+        document.getElementById('volunteerSuccess').style.display = 'block';
+        showToast('Thank you — we received your interest!', 'success');
+      } catch (err) {
+        showToast(err.message || 'Something went wrong. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Submit Interest';
+      }
+    });
+  </script>
+</body>
+</html>

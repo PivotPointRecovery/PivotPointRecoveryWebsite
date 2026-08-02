@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate — Pivot Point Recovery</title>
+  <meta name="description" content="Support peer-led recovery in Northern Virginia. Your gift funds mentorship, recovery navigation, and reentry support — free to the people who need them.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img class="nav-logo-img nav-logo-white" src="/logo-white.svg" alt="Pivot Point Recovery">
+        <img class="nav-logo-img nav-logo-teal" src="/logo-color.svg" alt="Pivot Point Recovery">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">Our Story</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/resources" class="nav-resources">Find Local Resources</a></li>
+        <li><a href="/get-involved">Get Involved</a></li>
+        <li><a href="/volunteer" class="nav-volunteer">Volunteer</a></li>
+        <li><a href="/donate" class="nav-donate active">Donate</a></li>
+        <li><a href="/contact" class="nav-cta">Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-bg">
+      <img src="https://images.pexels.com/photos/5710923/pexels-photo-5710923.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="A supportive conversation between two people" loading="eager">
+      <div class="page-hero-overlay"></div>
+    </div>
+    <div class="container">
+      <p class="section-label">Donate</p>
+      <h1 class="section-title">Fund Recovery Where People Live</h1>
+      <p>Pivot Point services are free to participants. Your gift is what makes that possible.</p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="donate-grid">
+        <!-- ---------- Giving form ---------- -->
+        <div>
+          <p class="section-label">Make a Gift</p>
+          <h2 class="section-title" style="font-size:clamp(1.5rem,2.6vw,2rem)">Choose Your Amount</h2>
+
+          <div class="contact-form" style="background:var(--color-white)">
+            <form id="donateForm" novalidate>
+              <div class="hp-field" aria-hidden="true">
+                <label>Leave this field blank: <input type="text" name="_honeypot" id="_honeypot" tabindex="-1" autocomplete="off"></label>
+              </div>
+
+              <div class="freq-toggle" role="group" aria-label="Giving frequency">
+                <button type="button" id="freqOnce" class="active">One-time</button>
+                <button type="button" id="freqMonthly">Monthly</button>
+              </div>
+
+              <div class="form-group">
+                <label>Donation Amount <span class="required-star">*</span></label>
+                <div class="amount-grid">
+                  <button type="button" class="amount-btn" data-amount="25">$25</button>
+                  <button type="button" class="amount-btn active" data-amount="50">$50</button>
+                  <button type="button" class="amount-btn" data-amount="100">$100</button>
+                  <button type="button" class="amount-btn" data-amount="250">$250</button>
+                  <button type="button" class="amount-btn" data-amount="500">$500</button>
+                  <button type="button" class="amount-btn" data-amount="1000">$1,000</button>
+                </div>
+                <div class="amount-custom">
+                  <span>$</span>
+                  <input type="number" id="customAmount" min="1" step="1" placeholder="Other amount" aria-label="Custom donation amount">
+                </div>
+                <div class="form-error" id="amountError">Please enter an amount greater than zero.</div>
+              </div>
+
+              <div class="donate-summary">
+                <span class="label">Your Gift</span>
+                <span class="value" id="summaryValue">$50.00</span>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="donorName">Full Name <span class="required-star">*</span></label>
+                  <input type="text" id="donorName" name="donorName" required placeholder="Your name">
+                  <div class="form-error" id="donorNameError">Please enter your name.</div>
+                </div>
+                <div class="form-group">
+                  <label for="donorEmail">Email Address <span class="required-star">*</span></label>
+                  <input type="email" id="donorEmail" name="donorEmail" required placeholder="you@example.com">
+                  <div class="form-error" id="donorEmailError">Please enter a valid email address.</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="fund">Fund Designation</label>
+                <select id="fund" name="fund">
+                  <option value="">Where it's needed most</option>
+                  <option value="peer-support">Peer Recovery Support</option>
+                  <option value="reentry">Reentry &amp; Reintegration</option>
+                  <option value="veteran-mentorship">Veteran Mentorship</option>
+                  <option value="family-community">Family &amp; Community</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="check-option" style="border:none;padding:0;background:transparent">
+                  <input type="checkbox" id="employerMatch"> My employer will match this donation
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-large" id="donateBtn" style="width:100%;justify-content:center">Donate $50.00</button>
+              <p class="form-note">Payments are securely processed by Stripe. You'll receive an emailed receipt for your records.</p>
+            </form>
+          </div>
+        </div>
+
+        <!-- ---------- Impact ---------- -->
+        <div>
+          <p class="section-label">Your Impact</p>
+          <h2 class="section-title" style="font-size:clamp(1.5rem,2.6vw,2rem)">What Your Gift Does</h2>
+          <div class="impact-levels">
+            <div class="impact-level">
+              <span class="amt">$25</span>
+              <p>Covers transportation so someone can get to a recovery meeting, court date, or job interview.</p>
+            </div>
+            <div class="impact-level">
+              <span class="amt">$50</span>
+              <p>Funds a one-on-one session with a Certified Peer Recovery Specialist.</p>
+            </div>
+            <div class="impact-level">
+              <span class="amt">$100</span>
+              <p>Supplies a reentry starter kit — essentials for someone leaving incarceration.</p>
+            </div>
+            <div class="impact-level">
+              <span class="amt">$250</span>
+              <p>Sponsors a month of recovery navigation: housing, employment, and benefits support.</p>
+            </div>
+            <div class="impact-level">
+              <span class="amt">$500</span>
+              <p>Underwrites a community recovery event that reaches dozens of families.</p>
+            </div>
+            <div class="impact-level">
+              <span class="amt">$1,000</span>
+              <p>Trains and equips a new volunteer peer mentor from intake through certification.</p>
+            </div>
+          </div>
+
+          <div class="trust-bar">
+            <div class="trust-item">
+              <strong>501(c)(3)</strong>
+              <span>Tax-deductible</span>
+            </div>
+            <div class="trust-item">
+              <strong>EIN 41-4331928</strong>
+              <span>Registered nonprofit</span>
+            </div>
+            <div class="trust-item">
+              <strong>Stripe</strong>
+              <span>Secure processing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section alt">
+    <div class="container">
+      <div class="section-header center">
+        <p class="section-label">Other Ways to Give</p>
+        <h2 class="section-title">More Than One Way to Help</h2>
+      </div>
+      <div class="give-other">
+        <div class="give-other-card">
+          <h3>Give by Check</h3>
+          <p>Make checks payable to <strong>Pivot Point Recovery, Inc.</strong> Contact us for the current mailing address and we'll send a receipt for your records.</p>
+        </div>
+        <div class="give-other-card">
+          <h3>Employer Matching</h3>
+          <p>Many employers double charitable gifts. Check the matching box when you give, and submit your employer's form — we'll provide whatever documentation they need.</p>
+        </div>
+        <div class="give-other-card">
+          <h3>Monthly Giving</h3>
+          <p>Recurring gifts are the most valuable kind. They let us commit to participants for the long haul instead of one grant cycle at a time.</p>
+        </div>
+        <div class="give-other-card">
+          <h3>Sponsor a Program</h3>
+          <p>Businesses and civic groups can underwrite a specific program or event. Get in touch and we'll build something that fits.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-banner">
+        <img src="https://images.pexels.com/photos/6129493/pexels-photo-6129493.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="" class="cta-bg-img" loading="lazy">
+        <div class="cta-overlay"></div>
+        <div class="cta-content">
+          <h2>Questions About Giving?</h2>
+          <p>We're glad to talk through where your gift goes, matching programs, or sponsorship options.</p>
+          <div class="cta-actions">
+            <a href="/contact" class="btn btn-primary btn-large">Contact Us</a>
+            <a href="/about" class="btn btn-ghost btn-large">Read Our Story</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo-link">
+            <img class="footer-logo-img" src="/logo-white.svg" alt="Pivot Point Recovery">
+          </a>
+          <p>Building a compassionate, recovery-centered community in Northern Virginia.</p>
+          <p class="footer-org-type">501(c)(3) Nonprofit Organization</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigate</h4>
+          <ul><li><a href="/">Home</a></li><li><a href="/about">Our Story</a></li><li><a href="/services">Services</a></li><li><a href="/resources">Resources</a></li><li><a href="/get-involved">Get Involved</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/portal">PPR Login</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Crisis Resources</h4>
+          <ul><li><a href="tel:988">988 Suicide &amp; Crisis Lifeline</a></li><li><a href="tel:18006624357">SAMHSA: 1-800-662-4357</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <p>Northern Virginia</p>
+          <a href="/contact" class="btn btn-outline btn-small">Send a Message</a>
+        </div>
+      </div>
+      <p class="footer-legal">Pivot Point Recovery, Inc. is a registered 501(c)(3) nonprofit organization. EIN 41-4331928. Donations are tax-deductible to the extent allowed by law.</p>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pivot Point Recovery. All rights reserved.</p>
+        <p class="photo-credit">Photos by <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/main.js"></script>
+  <script>
+    // Posts to the portal's donation checkout API on the same host. That
+    // route resolves the tenant from the request host server-side, creates a
+    // Stripe Checkout session, and returns { url } for us to redirect to.
+    const CHECKOUT_ENDPOINT = '/api/donations/checkout';
+
+    let amount = 50;
+    let isRecurring = false;
+
+    function fmt(n) {
+      return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function refresh() {
+      const valid = amount > 0;
+      document.getElementById('summaryValue').textContent = valid ? fmt(amount) : '—';
+      const btn = document.getElementById('donateBtn');
+      btn.textContent = valid
+        ? (isRecurring ? 'Donate ' + fmt(amount) + ' / month' : 'Donate ' + fmt(amount))
+        : 'Donate';
+    }
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + type + ' show';
+      setTimeout(function () { t.classList.remove('show'); }, 4000);
+    }
+    function showError(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('visible');
+      const input = el.previousElementSibling;
+      if (input && (input.tagName === 'INPUT' || input.tagName === 'SELECT')) input.classList.add('error');
+    }
+    function hideError(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('visible');
+      const input = el.previousElementSibling;
+      if (input) input.classList.remove('error');
+    }
+
+    // Preset amount buttons
+    document.querySelectorAll('.amount-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('customAmount').value = '';
+        amount = parseFloat(btn.dataset.amount);
+        hideError('amountError');
+        refresh();
+      });
+    });
+
+    // Custom amount clears preset selection
+    document.getElementById('customAmount').addEventListener('input', function () {
+      const v = parseFloat(this.value);
+      if (this.value !== '') {
+        document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('active'); });
+      }
+      amount = isNaN(v) ? 0 : v;
+      if (amount > 0) hideError('amountError');
+      refresh();
+    });
+
+    // Frequency toggle
+    document.getElementById('freqOnce').addEventListener('click', function () {
+      isRecurring = false;
+      this.classList.add('active');
+      document.getElementById('freqMonthly').classList.remove('active');
+      refresh();
+    });
+    document.getElementById('freqMonthly').addEventListener('click', function () {
+      isRecurring = true;
+      this.classList.add('active');
+      document.getElementById('freqOnce').classList.remove('active');
+      refresh();
+    });
+
+    ['donorName', 'donorEmail'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', function () { hideError(id + 'Error'); });
+    });
+
+    document.getElementById('donateForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      // Honeypot: bots fill this. Pretend success and drop the submission.
+      if (document.getElementById('_honeypot').value.trim()) return;
+
+      const donorName = document.getElementById('donorName').value.trim();
+      const donorEmail = document.getElementById('donorEmail').value.trim();
+      const fund = document.getElementById('fund').value;
+      const employerMatch = document.getElementById('employerMatch').checked;
+
+      let valid = true;
+      if (!(amount > 0)) { showError('amountError'); valid = false; } else { hideError('amountError'); }
+      if (!donorName) { showError('donorNameError'); valid = false; } else { hideError('donorNameError'); }
+      if (!donorEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donorEmail)) { showError('donorEmailError'); valid = false; } else { hideError('donorEmailError'); }
+      if (!valid) return;
+
+      const btn = document.getElementById('donateBtn');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Redirecting to secure checkout…';
+
+      const payload = {
+        amount: amount,
+        donor_name: donorName,
+        donor_email: donorEmail,
+        is_recurring: isRecurring,
+        employer_match: employerMatch
+      };
+      if (isRecurring) payload.frequency = 'monthly';
+      if (fund) payload.fund_designation = fund;
+
+      try {
+        const res = await fetch(CHECKOUT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(function () { return {}; });
+        if (!res.ok || !data.url) {
+          throw new Error(data.error || 'Could not start checkout. Please try again.');
+        }
+        window.location.href = data.url;
+      } catch (err) {
+        showToast(err.message || 'Something went wrong. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+
+    refresh();
+  </script>
+</body>
+</html>
