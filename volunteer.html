@@ -69,6 +69,10 @@
           <p>Support justice-involved individuals during the critical first months after release.</p>
         </div>
         <div class="involve-card">
+          <h3>Internships</h3>
+          <p>Academic interns and Peer Recovery Specialist trainees serve under supervision, logging hours toward Virginia CPRS certification.</p>
+        </div>
+        <div class="involve-card">
           <h3>Administrative Support</h3>
           <p>Behind-the-scenes help with scheduling, data, communications, and the logistics that keep programs running.</p>
         </div>
@@ -135,6 +139,7 @@
                 <label class="check-option"><input type="checkbox" name="interests" value="mentoring"> Mentoring</label>
                 <label class="check-option"><input type="checkbox" name="interests" value="events"> Events &amp; Outreach</label>
                 <label class="check-option"><input type="checkbox" name="interests" value="reentry"> Reentry &amp; Reintegration</label>
+                <label class="check-option"><input type="checkbox" name="interests" value="internship"> Internship (Academic or PRS Trainee)</label>
                 <label class="check-option"><input type="checkbox" name="interests" value="admin"> Administrative Support</label>
                 <label class="check-option"><input type="checkbox" name="interests" value="fundraising"> Fundraising</label>
                 <label class="check-option"><input type="checkbox" name="interests" value="other"> Something Else</label>
@@ -281,6 +286,18 @@
         .call(document.querySelectorAll('input[name="interests"]:checked'))
         .map(function (el) { return el.value; });
 
+      // public-forms whitelists the values it will store in `interests` and
+      // silently drops anything else. `internship` is not in that list yet, so
+      // carry it in the free-text field too — otherwise the one thing the
+      // applicant told us gets thrown away. Remove once the function is updated.
+      const CARRIED_LABELS = { internship: 'Internship (academic or PRS trainee)' };
+      const carried = interests
+        .filter(function (v) { return CARRIED_LABELS[v]; })
+        .map(function (v) { return CARRIED_LABELS[v]; });
+      const experiencePayload = carried.length
+        ? (experience ? experience + '\n\n' : '') + 'Also interested in: ' + carried.join(', ')
+        : experience;
+
       let valid = true;
       if (!firstName) { showError('firstNameError'); valid = false; } else { hideError('firstNameError'); }
       if (!lastName) { showError('lastNameError'); valid = false; } else { hideError('lastNameError'); }
@@ -305,7 +322,7 @@
             city: city,
             interests: interests,
             availability: availability,
-            experience: experience,
+            experience: experiencePayload,
             _honeypot: honeypot
           })
         });

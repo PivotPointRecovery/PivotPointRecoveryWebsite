@@ -55,6 +55,24 @@ https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms
 Both include an off-screen honeypot field (`_honeypot`); the function silently
 accepts and drops any submission that fills it.
 
+### Volunteer interest values are whitelisted server-side
+
+The function only stores `interests` values it recognises, and **silently drops
+the rest** — a new checkbox in `volunteer.html` does not reach the database on
+its own. The accepted values are:
+
+```
+peer-support  mentoring  events  admin  fundraising  reentry  other
+```
+
+`internship` (Internship — Academic or PRS Trainee) is on the form but **not yet
+in that list**. Until it is, `volunteer.html` appends the selection to the
+free-text `experience` field so the applicant's answer still gets through. To
+finish the job, add `internship` to `VOL_INTEREST_VALUES` and
+`VOL_INTEREST_LABELS` in `supabase/functions/public-forms/index.ts` in the
+`nonprofitportal` repo, redeploy, then drop the `CARRIED_LABELS` workaround
+from `volunteer.html`.
+
 ### Who receives the notification emails
 
 Recipients are **not** configured in this repo. The edge function reads a
@@ -71,11 +89,32 @@ If either `RESEND_API_KEY` or `NOTIFICATION_EMAILS` is unset, the submission is
 still saved to the database but **no email goes out**. The function returns
 `{ ok: true, notified: false }` and logs the reason.
 
-> **Known issue as of this commit.** A live test submission against the
-> deployed function returned `{"ok":true,"notified":false}` — rows are being
-> saved but no notification email is being sent, for the contact form as well
-> as volunteer. Setting the secrets above is required to actually get mail to
-> Steve; the form markup alone is not sufficient.
+> **Known issue as of this commit — no notification email reaches staff.** A
+> live test returns `{"ok":true,"notified":false}`: rows save, mail does not go
+> out, for contact and volunteer alike.
+>
+> The secrets above **are** set — that is not the cause. The edge function logs
+> show Resend rejecting every send:
+>
+> ```
+> Resend 403: You can only send testing emails to your own email address
+> (erica.gaffney6@gmail.com). To send emails to other recipients, please verify
+> a domain at resend.com/domains, and change the `from` address to an email
+> using this domain.
+> ```
+>
+> The Resend account is still in unverified/test mode, so it will only deliver
+> to the account owner's own address and refuses `steve@pivotpointrecovery.org`.
+> No change in this repo can fix it. The fix is, in the Resend dashboard:
+>
+> 1. Verify `pivotpointrecovery.org` at resend.com/domains and add the DKIM/SPF
+>    records it issues to DNS.
+> 2. Set `RESEND_FROM` to an address on that verified domain — the tenant record
+>    already expects `Pivot Point Recovery <noreply@pivotpointrecovery.org>`.
+>
+> Submissions received while this was broken are still in `contact_submissions`
+> and `volunteer_interests`; they were never emailed to anyone and need pulling
+> out of the portal by hand.
 
 Verify with:
 
