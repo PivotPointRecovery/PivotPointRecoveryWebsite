@@ -215,11 +215,13 @@ saved but nobody was emailed — the exact failure this migration exists to end.
   `submit_type: donate`, fund metadata, `client_reference_id`).
 - Forged and replayed webhook events are both rejected without writing.
 
-Remaining, and it is not a code change: **set `STRIPE_WEBHOOK_SECRET`** on the
-Supabase project to the signing secret of the live endpoint
-`we_1U6bEyGWetqSZh9zsx3gpfZD`. Until then the webhook runs in re-fetch-only
-mode — safe, because amounts are always read back from Stripe rather than taken
-from the payload, but signature verification should be on.
+`STRIPE_WEBHOOK_SECRET` is now set: the webhook reports
+`"verification":"signature"` and rejects a forged event with
+`400 Invalid signature`.
+
+The one thing still broken is delivery, not configuration — see the status note
+above and the README's Forms section. Notification mail is accepted by Resend
+and never arrives.
 
 Still open from step 1: import the exported CSVs into the new project's tables.
 

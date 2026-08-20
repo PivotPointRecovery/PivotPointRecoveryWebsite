@@ -212,10 +212,14 @@ Two independent defences, because money is on the line:
    timestamp tolerance and a constant-time compare.
 2. **Re-fetch.** Every object is read back from the Stripe API before anything
    is written, so amounts and payment status come from Stripe rather than from
-   the request body. If `STRIPE_WEBHOOK_SECRET` is unset the function stays up
-   in re-fetch-only mode and `?health=1` reports
-   `"verification":"refetch_only"` — a forged event still cannot book a gift,
-   because the amount is never taken from the payload. Set the secret anyway.
+   the request body.
+
+`STRIPE_WEBHOOK_SECRET` **is set**, so `?health=1` reports
+`"verification":"signature"` and a forged event is rejected outright with
+`400 Invalid signature`. If the secret were ever removed the function stays up
+in re-fetch-only mode (`"verification":"refetch_only"`) rather than failing
+closed — a forged event still could not book a gift, since the amount is never
+taken from the payload, but signature checking is the intended posture.
 
 Redelivery is handled by a `stripe_events` table keyed on the Stripe event id,
 so a replayed event returns `{"received":true,"duplicate":true}` and writes
@@ -271,7 +275,7 @@ short alias list, so a name that is *close* still works — but check
 | Secret | Used by | Effect if unset |
 | --- | --- | --- |
 | `STRIPE_SECRET_KEY` | checkout, webhook | Checkout returns 502; no gift can be made |
-| `STRIPE_WEBHOOK_SECRET` | webhook | Falls back to re-fetch-only verification |
+| `STRIPE_WEBHOOK_SECRET` | webhook | **Set.** If removed, falls back to re-fetch-only verification |
 | `RESEND_API_KEY` | all three | Rows save, no mail |
 | `NOTIFICATION_EMAILS` | all three | Only the `notification_recipients` table is used; if that is empty too, staff are not told |
 | `RESEND_FROM` | all three | Falls back to Resend's sandbox sender (403 to anyone but the account owner) |
