@@ -9,7 +9,7 @@ reversible, the database move is neither.
 | | From | To |
 | --- | --- | --- |
 | Repo | `erica-83/PivotPointRecoveryWebsite` | `PivotPointRecovery/Website` |
-| Supabase | `ydynhwrlpwvlhhohzfwl` (shared with the portal) | a new project in a new account |
+| Supabase | `ydynhwrlpwvlhhohzfwl` (shared with the portal) | `ihgwhglatsbhngbsezuj` (own account, `us-west-2`) |
 
 ## Why the database is splitting
 
@@ -149,23 +149,27 @@ Stripe keys and the webhook are only needed once the donate page is live —
 
 ## Step 5 — Point the site at the new project
 
-The old ref is hardcoded in three places on `main`:
+**Done.** The old ref was hardcoded in three places on `main`; all three now
+point at `ihgwhglatsbhngbsezuj`:
 
 ```
 contact.html      FORMS_ENDPOINT
 volunteer.html    FORMS_ENDPOINT
-README.md         several references
+README.md         endpoint + verification references
 ```
 
-PR #2 adds `donate.html` to that list. Replace `ydynhwrlpwvlhhohzfwl` with the
-new ref everywhere:
+PR #2 adds `donate.html` to that list, so re-check after it merges. Residual
+references (this runbook aside, where the old ref names the source project):
 
 ```sh
 grep -rln ydynhwrlpwvlhhohzfwl . --include=*.html --include=*.md
 ```
 
-Then import the CSVs from step 1 into the new project's tables, so the history
-of who has contacted you moves with the site.
+`_headers` needed no change — its CSP allows `connect-src https://*.supabase.co`,
+which covers any project ref.
+
+**Still outstanding:** import the CSVs from step 1 into the new project's
+tables, so the history of who has contacted you moves with the site.
 
 ---
 
@@ -185,6 +189,32 @@ curl -s -X POST "https://<NEW_REF>.supabase.co/functions/v1/public-forms" \
 
 `{"ok":true,"notified":true}` is the finish line. `notified:false` means the row
 saved but nobody was emailed — the exact failure this migration exists to end.
+
+**Status 2026-08-20.** Against `ihgwhglatsbhngbsezuj`: schema applied
+(`contact_submissions`, `volunteer_interests`, `donations`), `public-forms`
+deployed and `ACTIVE` with `verify_jwt` off, CORS returning the production
+origin, and live `contact` + `volunteer` POSTs both saving rows. `?health=1`
+reports `RESEND_API_KEY: true` and `NOTIFICATION_EMAILS: true`.
+
+Submissions still return `notified:false`, and the function logs give the
+reason — it is Resend, not the secrets:
+
+```
+resend_failed 403 validation_error
+You can only send testing emails to your own email address
+(erica@pivotpointrecovery.org). To send emails to other recipients, please
+verify a domain at resend.com/domains, and change the `from` address to an
+email using this domain.
+```
+
+So the warning in step 4 is the live blocker: `pivotpointrecovery.org` is not
+yet verified in Resend, and with `RESEND_FROM` unset the sender falls back to
+the shared `onboarding@resend.dev`, which Resend restricts to the account
+owner's own address. Verify the domain, then set `RESEND_FROM` to an address on
+it. `erica@pivotpointrecovery.org` is the only recipient that works until then.
+
+`donate-checkout` and `donate-webhook` are not deployed yet; they arrive with
+PR #2.
 
 Then submit through the live site in a browser and confirm the mail arrives at
 Steve's inbox, not just that the API says it did.
