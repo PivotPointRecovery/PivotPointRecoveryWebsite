@@ -190,34 +190,38 @@ curl -s -X POST "https://<NEW_REF>.supabase.co/functions/v1/public-forms" \
 `{"ok":true,"notified":true}` is the finish line. `notified:false` means the row
 saved but nobody was emailed — the exact failure this migration exists to end.
 
-**Status 2026-08-20.** Against `ihgwhglatsbhngbsezuj`: schema applied
-(`contact_submissions`, `volunteer_interests`, `donations`), `public-forms`
-deployed and `ACTIVE` with `verify_jwt` off, CORS returning the production
-origin, and live `contact` + `volunteer` POSTs both saving rows. `?health=1`
-reports `RESEND_API_KEY: true` and `NOTIFICATION_EMAILS: true`.
+**Status 2026-08-20 — steps 4 and 6 are done.** Against `ihgwhglatsbhngbsezuj`:
 
-Submissions still return `notified:false`, and the function logs give the
-reason — it is Resend, not the secrets:
+- Schema applied: `contact_submissions`, `volunteer_interests`, `donations`,
+  plus a `stripe_events` ledger for webhook idempotency.
+- All three functions deployed and `ACTIVE` with `verify_jwt` off:
+  `public-forms`, `donations-checkout`, `donations-webhook`. (They are named
+  `donations-*`, not the `donate-*` this runbook first guessed.)
+- CORS returns the production origin, and rejects origins outside the
+  allowlist.
+- **Email works.** `pivotpointrecovery.org` is verified in Resend — DKIM
+  (`resend._domainkey`) and the `send.` bounce subdomain both resolve — and
+  `RESEND_FROM` is set to an address on the domain. A live `contact` POST
+  returns `{"ok":true,"notified":true}`. The `403 validation_error` documented
+  below is gone.
+- **Donations work.** Live Stripe Checkout sessions are created for both
+  one-time and monthly gifts, driven from the real page in a browser, and
+  verified server-side against the Stripe API (correct amount, `mode`,
+  `submit_type: donate`, fund metadata, `client_reference_id`).
+- Forged and replayed webhook events are both rejected without writing.
 
-```
-resend_failed 403 validation_error
-You can only send testing emails to your own email address
-(erica@pivotpointrecovery.org). To send emails to other recipients, please
-verify a domain at resend.com/domains, and change the `from` address to an
-email using this domain.
-```
+Remaining, and it is not a code change: **set `STRIPE_WEBHOOK_SECRET`** on the
+Supabase project to the signing secret of the live endpoint
+`we_1U6bEyGWetqSZh9zsx3gpfZD`. Until then the webhook runs in re-fetch-only
+mode — safe, because amounts are always read back from Stripe rather than taken
+from the payload, but signature verification should be on.
 
-So the warning in step 4 is the live blocker: `pivotpointrecovery.org` is not
-yet verified in Resend, and with `RESEND_FROM` unset the sender falls back to
-the shared `onboarding@resend.dev`, which Resend restricts to the account
-owner's own address. Verify the domain, then set `RESEND_FROM` to an address on
-it. `erica@pivotpointrecovery.org` is the only recipient that works until then.
+Still open from step 1: import the exported CSVs into the new project's tables.
 
-`donate-checkout` and `donate-webhook` are not deployed yet; they arrive with
-PR #2.
-
-Then submit through the live site in a browser and confirm the mail arrives at
-Steve's inbox, not just that the API says it did.
+One caveat on the free tier that matters more now than it did: free projects
+pause after a week of inactivity, and a paused project means a donation that
+cannot be recorded, not merely a form that is slow. Consider the paid tier now
+that money flows through this project.
 
 ---
 

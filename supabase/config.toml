@@ -1,0 +1,18 @@
+project_id = "ihgwhglatsbhngbsezuj"
+
+# All three functions are called by parties with no Supabase session -- an
+# anonymous browser visitor, or Stripe's servers. verify_jwt must be false or
+# the platform rejects them with 401 before our code ever runs.
+#
+# These endpoints are public by design and defend themselves: an origin
+# allowlist and honeypot on the browser-facing ones, and on the webhook a
+# signature check plus an authoritative re-fetch of every object from Stripe.
+
+[functions.public-forms]
+verify_jwt = false
+
+[functions.donations-checkout]
+verify_jwt = false
+
+[functions.donations-webhook]
+verify_jwt = false
