@@ -124,6 +124,11 @@ jobs:
           echo "staged:"; ls -1 _site
 
       - name: Create Pages project if it does not exist
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_BEARER }}
+          CLOUDFLARE_API_KEY: ${{ env.CF_KEY }}
+          CLOUDFLARE_EMAIL: ${{ env.CF_EMAIL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT_ID }}
         run: |
           set -uo pipefail
           source scripts/cf-api.sh
@@ -133,17 +138,38 @@ jobs:
 
           if [ -n "$existing" ]; then
             echo "Project '$PROJECT_NAME' already exists — reusing it."
-          else
-            echo "Creating Pages project '$PROJECT_NAME'..."
-            c=$(cf_api -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
-              --data "{\"name\":\"$PROJECT_NAME\",\"production_branch\":\"main\"}")
-            if [ "$(echo "$c" | jq -r '.success')" != "true" ]; then
-              echo "::error::Failed to create Pages project."
-              echo "$c" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
-              exit 1
-            fi
-            echo "Created."
+            exit 0
           fi
+
+          # Prefer wrangler over a raw POST. The REST endpoint wants a fuller
+          # body than name+production_branch and answers an under-specified
+          # payload with a bare 8000000 "unknown error"; wrangler assembles the
+          # whole thing (build config, deployment configs) correctly.
+          echo "Creating Pages project '$PROJECT_NAME' via wrangler..."
+          if npx --yes wrangler@3 pages project create "$PROJECT_NAME" --production-branch=main; then
+            echo "Created."
+            exit 0
+          fi
+
+          echo "wrangler could not create the project; retrying once via the REST API for a fuller diagnostic..."
+          c=$(cf_api -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
+            --data "{\"name\":\"$PROJECT_NAME\",\"production_branch\":\"main\"}")
+          if [ "$(echo "$c" | jq -r '.success')" = "true" ]; then
+            echo "Created via REST."
+            exit 0
+          fi
+
+          echo "::error::Could not create the Cloudflare Pages project."
+          echo "Full API response (no secrets are included in this body):"
+          echo "$c" | jq . 2>/dev/null || echo "$c"
+          echo ""
+          echo "If this is error 8000000 with no detail, the usual causes are:"
+          echo "  * the account has never used Pages and needs it enabled once in the"
+          echo "    dashboard (Workers & Pages -> Create -> Pages), after which this"
+          echo "    workflow can take over;"
+          echo "  * the project name is reserved;"
+          echo "  * a transient Cloudflare incident - check status.cloudflare.com."
+          exit 1
 
       - name: Publish to Cloudflare Pages
         id: publish
