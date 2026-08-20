@@ -41,11 +41,12 @@ Reuse the existing classes rather than adding new ones where possible:
 
 Both public forms POST to the same Supabase edge function, which validates the
 payload, writes it to the database with the service role, and emails staff via
-Resend. The function answers preflight with `Access-Control-Allow-Origin: *`,
-so the browser is never what blocks a submission:
+Resend. The function answers preflight with an explicit origin allowlist —
+`pivotpointrecovery.org`, `www.pivotpointrecovery.org`, any `*.pages.dev`
+preview, and localhost — overridable with the `ALLOWED_ORIGINS` secret:
 
 ```
-https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms
+https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/public-forms
 ```
 
 | Form | `form_type` | Table |
@@ -72,19 +73,48 @@ If either `RESEND_API_KEY` or `NOTIFICATION_EMAILS` is unset, the submission is
 still saved to the database but **no email goes out**. The function returns
 `{ ok: true, notified: false }` and logs the reason.
 
-> **Open issue — still reproducing (verified 2026-08-20).** Live test
-> submissions against the deployed function return `{"ok":true,"notified":false}`
-> for both `contact` and `volunteer`. Rows are being saved, but **no
-> notification email goes out**, so from staff's point of view the forms look
-> broken. The page markup and client JS are fine — the cause is that
-> `RESEND_API_KEY` and/or `NOTIFICATION_EMAILS` are unset on the edge function.
-> This cannot be fixed from this repo; run the `supabase secrets set` command
-> above against project `ydynhwrlpwvlhhohzfwl`, then re-run the curl check.
+> **Open issue — no verified Resend domain (verified 2026-08-20).** Live test
+> submissions against project `ihgwhglatsbhngbsezuj` return
+> `{"ok":true,"notified":false}`. Rows save correctly, CORS is fine, and
+> `?health=1` now reports both `RESEND_API_KEY: true` and
+> `NOTIFICATION_EMAILS: true` — the secrets are not the problem. Resend is
+> rejecting the send outright:
+>
+> ```
+> resend_failed 403 validation_error
+> You can only send testing emails to your own email address
+> (erica@pivotpointrecovery.org). To send emails to other recipients, please
+> verify a domain at resend.com/domains, and change the `from` address to an
+> email using this domain.
+> ```
+>
+> `RESEND_FROM` is unset, so the sender falls back to Resend's shared
+> `onboarding@resend.dev`. On that sandbox sender Resend delivers **only** to
+> the account owner's own address, so mail to any other recipient —
+> `steve@pivotpointrecovery.org` included — is refused with the 403 above.
+>
+> Two steps close it, neither of which lives in this repo:
+>
+> 1. Verify `pivotpointrecovery.org` at [resend.com/domains](https://resend.com/domains)
+>    — add the SPF and DKIM records it gives you to Cloudflare DNS and wait for
+>    it to report Verified.
+> 2. Set `RESEND_FROM` to an address on that domain, e.g.
+>    `Pivot Point Recovery <info@pivotpointrecovery.org>`. Leaving it unset
+>    keeps the sandbox sender and the 403.
+>
+> Until then, the only recipient Resend will accept is
+> `erica@pivotpointrecovery.org`. Setting `NOTIFICATION_EMAILS` to that address
+> is a usable stopgap: staff get mail immediately, and it can be widened to
+> Steve and `info@` once the domain verifies.
 
 Verify with:
 
 ```sh
-curl -s -X POST https://ydynhwrlpwvlhhohzfwl.supabase.co/functions/v1/public-forms \
+# Config presence (booleans only, never values)
+curl -s "https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/public-forms?health=1"
+
+# A real submission
+curl -s -X POST https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/public-forms \
   -H 'Content-Type: application/json' -H 'Origin: https://pivotpointrecovery.org' \
   -d '{"form_type":"volunteer","first_name":"Test","last_name":"Test","email":"you@example.com","phone":"5555550100"}'
 ```
