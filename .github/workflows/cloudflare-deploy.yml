@@ -1,19 +1,37 @@
-name: Deploy to Cloudflare Pages
+name: Deploy site and repoint domain
 
-# Builds a clean copy of the static site and publishes it to Cloudflare Pages.
+# Brings pivotpointrecovery.org back up, end to end, in one run.
 #
-# This workflow is deliberately NON-DESTRUCTIVE: it creates the Pages project
-# if it is missing and uploads the site, but it never edits DNS. Repointing the
-# apex domain is a separate, deliberate step — see fix-dns.yml.
+# The site is down for two stacked reasons:
+#   1. No Cloudflare Pages project exists, so the domain has no origin at all.
+#   2. The apex and www A/AAAA records hold Cloudflare's OWN anycast addresses,
+#      so the proxy resolves to itself — that is Cloudflare Error 1000.
 #
-# Repo is public, so logs are public: account and zone IDs are masked, and only
-# already-public information (DNS record names/contents) is ever printed.
+# Cloudflare also refuses to attach a Pages custom domain while a conflicting
+# A/AAAA record exists, so these must happen in order: publish first, then
+# clean up DNS. The two jobs below do exactly that.
+#
+# The dns job always prints its plan before changing anything, so the run log
+# records precisely which records were removed. It only ever considers A/AAAA
+# on the apex and www whose contents fall inside Cloudflare's own published IP
+# ranges — MX, TXT, SPF/DKIM and everything else are never touched, so mail
+# and domain verification are unaffected.
+#
+# Repo is public, so logs are public: credentials and account/zone IDs are
+# masked, and only already-public information is printed.
 
 on:
   push:
     branches: [main, claude/website-forms-broken-7v6bu3]
     paths-ignore: ['README.md']
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "apply = fix DNS; plan = show what would change and stop"
+        required: true
+        default: apply
+        type: choice
+        options: [apply, plan]
 
 permissions:
   contents: read
@@ -29,6 +47,29 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      # Every candidate secret name is exposed so scripts/cf-api.sh can probe
+      # them. Absent secrets expand to empty strings and are skipped.
+      CLOUDFLARE_ACCESS_TOKEN: ${{ secrets.CLOUDFLARE_ACCESS_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_TOKEN: ${{ secrets.CF_TOKEN }}
+      CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+      CLOUDFLARE_GLOBAL_API_KEY: ${{ secrets.CLOUDFLARE_GLOBAL_API_KEY }}
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      # Candidate account emails for the legacy global-key scheme. Taken from
+      # a secret if set, else from the push author (already public in git log).
+      CF_EMAIL_CANDIDATES: >-
+        ${{ secrets.CLOUDFLARE_EMAIL }}
+        ${{ github.event.head_commit.author.email }}
+        ${{ github.event.pusher.email }}
+    outputs:
+      pages_url: ${{ steps.publish.outputs.pages_url }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -40,142 +81,267 @@ jobs:
           echo "$SECRETS_JSON" | jq -r 'keys[] | "  - " + .'
 
       - name: Resolve Cloudflare credentials
-        id: creds
-        env:
-          T1: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          T2: ${{ secrets.CF_API_TOKEN }}
-          T3: ${{ secrets.CLOUDFLARE_TOKEN }}
-          A1: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          A2: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
-          TOKEN=""
-          for c in "$T1" "$T2" "$T3"; do
-            if [ -n "$c" ]; then TOKEN="$c"; break; fi
-          done
-          if [ -z "$TOKEN" ]; then
-            echo "::error::No Cloudflare API token found. Expected a repository secret named CLOUDFLARE_API_TOKEN (or CF_API_TOKEN / CLOUDFLARE_TOKEN). See the secret names listed in the previous step."
-            exit 1
-          fi
-          echo "::add-mask::$TOKEN"
-          echo "TOKEN=$TOKEN" >> "$GITHUB_ENV"
-
-          ACCT=""
-          for c in "$A1" "$A2"; do
-            if [ -n "$c" ]; then ACCT="$c"; break; fi
-          done
-          if [ -n "$ACCT" ]; then echo "::add-mask::$ACCT"; fi
-          echo "ACCT=$ACCT" >> "$GITHUB_ENV"
-
-      - name: Verify token and resolve account
-        run: |
-          set -euo pipefail
-          api() { curl -sS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' "$@"; }
-
-          echo "== Token verification =="
-          v=$(api "https://api.cloudflare.com/client/v4/user/tokens/verify")
-          if [ "$(echo "$v" | jq -r '.success')" != "true" ]; then
-            echo "::error::Cloudflare rejected the API token."
-            echo "$v" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
-            exit 1
-          fi
-          echo "  token status: $(echo "$v" | jq -r '.result.status')"
-
-          if [ -z "${ACCT:-}" ]; then
-            echo "== Resolving account (no account-id secret set) =="
-            a=$(api "https://api.cloudflare.com/client/v4/accounts?per_page=50")
-            n=$(echo "$a" | jq -r '.result | length')
-            echo "  accounts visible to this token: $n"
-            if [ "$n" != "1" ]; then
-              echo "$a" | jq -r '.result[]? | "  - " + .name'
-              echo "::error::Expected exactly one account; set CLOUDFLARE_ACCOUNT_ID to disambiguate."
-              exit 1
-            fi
-            ACCT=$(echo "$a" | jq -r '.result[0].id')
-            echo "::add-mask::$ACCT"
-            echo "ACCT=$ACCT" >> "$GITHUB_ENV"
-          fi
-          echo "  account resolved OK"
+          source scripts/cf-api.sh
+          cf_resolve_auth
 
       - name: Inspect zone, DNS and existing Pages projects
         run: |
-          set -euo pipefail
-          api() { curl -sS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' "$@"; }
+          set -uo pipefail
+          source scripts/cf-api.sh
 
           echo "== Zone =="
-          z=$(api "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME")
+          z=$(cf_api "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME")
           if [ "$(echo "$z" | jq -r '.result | length')" != "1" ]; then
-            echo "::warning::Zone $ZONE_NAME not visible to this token — the DNS step will need a token with Zone:DNS:Edit on this zone."
+            echo "::warning::Zone $ZONE_NAME not visible to this credential — the dns job will need Zone:DNS:Edit."
           else
             ZID=$(echo "$z" | jq -r '.result[0].id')
             echo "::add-mask::$ZID"
-            echo "ZID=$ZID" >> "$GITHUB_ENV"
             echo "  zone status: $(echo "$z" | jq -r '.result[0].status')"
-
-            echo "== Current A/AAAA/CNAME records on apex and www (public info) =="
-            r=$(api "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records?per_page=100")
-            echo "$r" | jq -r --arg z "$ZONE_NAME" '
-              .result[]
-              | select(.name == $z or .name == "www." + $z)
-              | select(.type == "A" or .type == "AAAA" or .type == "CNAME")
-              | "  " + .type + "  " + .name + "  ->  " + .content + "   proxied=" + (.proxied|tostring)'
+            echo "== Current A/AAAA/CNAME on apex and www (public info) =="
+            cf_api "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records?per_page=200" \
+              | jq -r --arg z "$ZONE_NAME" '
+                  .result[]
+                  | select(.name == $z or .name == "www." + $z)
+                  | select(.type == "A" or .type == "AAAA" or .type == "CNAME")
+                  | "  " + .type + "  " + .name + "  ->  " + .content + "   proxied=" + (.proxied|tostring)'
           fi
 
           echo "== Existing Pages projects =="
-          p=$(api "https://api.cloudflare.com/client/v4/accounts/$ACCT/pages/projects")
+          p=$(cf_api "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects")
           if [ "$(echo "$p" | jq -r '.success')" != "true" ]; then
-            echo "::warning::Could not list Pages projects — token may lack Pages:Edit."
+            echo "::warning::Could not list Pages projects — credential may lack Pages:Edit."
             echo "$p" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
           else
-            echo "$p" | jq -r 'if (.result|length) == 0 then "  (none)" else (.result[] | "  - " + .name + "  subdomain=" + (.subdomain // "?")) end'
+            echo "$p" | jq -r 'if (.result|length) == 0 then "  (none)" else (.result[] | "  - " + .name) end'
           fi
 
       - name: Stage site files
         run: |
           set -euo pipefail
           mkdir -p _site
-          cp -v *.html styles.css main.js *.svg veteran.jpeg _headers _site/
+          cp *.html styles.css main.js *.svg veteran.jpeg _headers _site/
           echo "staged:"; ls -1 _site
 
       - name: Create Pages project if it does not exist
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_BEARER }}
+          CLOUDFLARE_API_KEY: ${{ env.CF_KEY }}
+          CLOUDFLARE_EMAIL: ${{ env.CF_EMAIL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT_ID }}
         run: |
-          set -euo pipefail
-          api() { curl -sS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' "$@"; }
+          set -uo pipefail
+          source scripts/cf-api.sh
 
-          existing=$(api "https://api.cloudflare.com/client/v4/accounts/$ACCT/pages/projects" \
+          existing=$(cf_api "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
             | jq -r --arg n "$PROJECT_NAME" '.result[]? | select(.name == $n) | .name')
 
           if [ -n "$existing" ]; then
             echo "Project '$PROJECT_NAME' already exists — reusing it."
-          else
-            echo "Creating Pages project '$PROJECT_NAME'..."
-            c=$(api -X POST "https://api.cloudflare.com/client/v4/accounts/$ACCT/pages/projects" \
-              --data "{\"name\":\"$PROJECT_NAME\",\"production_branch\":\"main\"}")
-            if [ "$(echo "$c" | jq -r '.success')" != "true" ]; then
-              echo "::error::Failed to create Pages project."
-              echo "$c" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
-              exit 1
-            fi
-            echo "Created."
+            exit 0
           fi
 
+          # Prefer wrangler over a raw POST. The REST endpoint wants a fuller
+          # body than name+production_branch and answers an under-specified
+          # payload with a bare 8000000 "unknown error"; wrangler assembles the
+          # whole thing (build config, deployment configs) correctly.
+          echo "Creating Pages project '$PROJECT_NAME' via wrangler..."
+          if npx --yes wrangler@3 pages project create "$PROJECT_NAME" --production-branch=main; then
+            echo "Created."
+            exit 0
+          fi
+
+          echo "wrangler could not create the project; retrying once via the REST API for a fuller diagnostic..."
+          c=$(cf_api -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects" \
+            --data "{\"name\":\"$PROJECT_NAME\",\"production_branch\":\"main\"}")
+          if [ "$(echo "$c" | jq -r '.success')" = "true" ]; then
+            echo "Created via REST."
+            exit 0
+          fi
+
+          echo "::error::Could not create the Cloudflare Pages project."
+          echo "Full API response (no secrets are included in this body):"
+          echo "$c" | jq . 2>/dev/null || echo "$c"
+          echo ""
+          echo "If this is error 8000000 with no detail, the usual causes are:"
+          echo "  * the account has never used Pages and needs it enabled once in the"
+          echo "    dashboard (Workers & Pages -> Create -> Pages), after which this"
+          echo "    workflow can take over;"
+          echo "  * the project name is reserved;"
+          echo "  * a transient Cloudflare incident - check status.cloudflare.com."
+          exit 1
+
       - name: Publish to Cloudflare Pages
+        id: publish
         env:
-          CLOUDFLARE_API_TOKEN: ${{ env.TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ env.ACCT }}
-        run: npx --yes wrangler@3 pages deploy _site --project-name="$PROJECT_NAME" --branch=main
+          # Whichever scheme cf_resolve_auth settled on; wrangler accepts either.
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_BEARER }}
+          CLOUDFLARE_API_KEY: ${{ env.CF_KEY }}
+          CLOUDFLARE_EMAIL: ${{ env.CF_EMAIL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@3 pages deploy _site --project-name="$PROJECT_NAME" --branch=main
+          echo "pages_url=https://$PROJECT_NAME.pages.dev/" >> "$GITHUB_OUTPUT"
 
       - name: Confirm the deployed site responds
         run: |
-          set -euo pipefail
           url="https://$PROJECT_NAME.pages.dev/"
-          echo "Waiting for $url to serve..."
+          echo "Waiting for $url ..."
           for i in $(seq 1 12); do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$url" || echo 000)
             echo "  attempt $i: HTTP $code"
-            if [ "$code" = "200" ]; then
-              echo "LIVE: $url"
-              exit 0
-            fi
+            if [ "$code" = "200" ]; then echo "LIVE: $url"; exit 0; fi
             sleep 10
           done
-          echo "::warning::$url did not return 200 yet; the first deploy can take an extra minute to propagate."
+          echo "::warning::$url did not return 200 yet; a first deploy can need an extra minute."
+
+  dns:
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_ACCESS_TOKEN: ${{ secrets.CLOUDFLARE_ACCESS_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_TOKEN: ${{ secrets.CF_TOKEN }}
+      CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+      CLOUDFLARE_GLOBAL_API_KEY: ${{ secrets.CLOUDFLARE_GLOBAL_API_KEY }}
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      # Candidate account emails for the legacy global-key scheme. Taken from
+      # a secret if set, else from the push author (already public in git log).
+      CF_EMAIL_CANDIDATES: >-
+        ${{ secrets.CLOUDFLARE_EMAIL }}
+        ${{ github.event.head_commit.author.email }}
+        ${{ github.event.pusher.email }}
+      # Push runs apply; a manual run can choose plan.
+      MODE: ${{ inputs.mode || 'apply' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve Cloudflare credentials
+        run: |
+          source scripts/cf-api.sh
+          cf_resolve_auth
+
+      - name: Resolve zone
+        run: |
+          set -uo pipefail
+          source scripts/cf-api.sh
+          z=$(cf_api "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME")
+          if [ "$(echo "$z" | jq -r '.result|length')" != "1" ]; then
+            echo "::error::Zone $ZONE_NAME not accessible with this credential (needs Zone:DNS:Edit)."
+            echo "$z" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
+            exit 1
+          fi
+          ZID=$(echo "$z" | jq -r '.result[0].id')
+          echo "::add-mask::$ZID"
+          echo "ZID=$ZID" >> "$GITHUB_ENV"
+          echo "Zone resolved. status=$(echo "$z" | jq -r '.result[0].status')"
+
+      - name: Plan — identify the offending records
+        run: |
+          set -uo pipefail
+          source scripts/cf-api.sh
+
+          cf_api "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records?per_page=200" > all.json
+          curl -sS https://www.cloudflare.com/ips-v4 -o v4.txt
+          curl -sS https://www.cloudflare.com/ips-v6 -o v6.txt
+
+          python3 - <<'PY'
+          import ipaddress, json, os
+          zone = os.environ['ZONE_NAME']
+          nets = []
+          for f in ('v4.txt', 'v6.txt'):
+              for line in open(f):
+                  line = line.strip()
+                  if line:
+                      nets.append(ipaddress.ip_network(line))
+
+          recs = json.load(open('all.json'))['result']
+          targets = {zone, 'www.' + zone}
+          doomed, keep = [], []
+          for r in recs:
+              if r['name'] in targets and r['type'] in ('A', 'AAAA'):
+                  try:
+                      ip = ipaddress.ip_address(r['content'])
+                  except ValueError:
+                      continue
+                  (doomed if any(ip in n for n in nets) else keep).append(r)
+
+          print("== Records on apex/www pointing into Cloudflare's own ranges ==")
+          print("   (the cause of Error 1000 — these get REMOVED)")
+          for r in doomed:
+              print(f"   DELETE  {r['type']:5} {r['name']}  ->  {r['content']}")
+          if not doomed:
+              print("   (none — Error 1000 may already be resolved)")
+
+          if keep:
+              print("\n== Real origin records on apex/www — NOT touched ==")
+              for r in keep:
+                  print(f"   KEEP    {r['type']:5} {r['name']}  ->  {r['content']}")
+
+          others = [r for r in recs if not (r['name'] in targets and r['type'] in ('A','AAAA'))]
+          print(f"\n== {len(others)} other records (MX/TXT/CNAME/etc) — NOT touched ==")
+
+          with open(os.environ['GITHUB_ENV'], 'a') as fh:
+              fh.write('DOOMED_IDS=' + ','.join(r['id'] for r in doomed) + '\n')
+          PY
+
+      - name: Plan only — stop here
+        if: env.MODE == 'plan'
+        run: |
+          echo "MODE=plan, so nothing was changed."
+          echo "Re-run with mode=apply to remove the records above and attach the domain."
+
+      - name: Apply — remove offending records
+        if: env.MODE == 'apply'
+        run: |
+          set -uo pipefail
+          source scripts/cf-api.sh
+          if [ -z "${DOOMED_IDS:-}" ]; then
+            echo "Nothing to delete."
+          else
+            IFS=',' read -ra ids <<< "$DOOMED_IDS"
+            for id in "${ids[@]}"; do
+              [ -n "$id" ] || continue
+              out=$(cf_api -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records/$id")
+              ok=$(echo "$out" | jq -r '.success')
+              echo "  deleted record: success=$ok"
+              [ "$ok" = "true" ] || { echo "$out" | jq -r '.errors[]?|"  "+.message'; exit 1; }
+            done
+          fi
+
+      - name: Apply — attach custom domains to the Pages project
+        if: env.MODE == 'apply'
+        run: |
+          set -uo pipefail
+          source scripts/cf-api.sh
+          for host in "$ZONE_NAME" "www.$ZONE_NAME"; do
+            echo "Attaching $host ..."
+            out=$(cf_api -X POST \
+              "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/$PROJECT_NAME/domains" \
+              --data "{\"name\":\"$host\"}")
+            if [ "$(echo "$out" | jq -r '.success')" = "true" ]; then
+              echo "  attached."
+            else
+              # An "already exists" error is expected on re-runs and is fine.
+              echo "$out" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
+            fi
+          done
+
+      - name: Apply — verify the real site is up
+        if: env.MODE == 'apply'
+        run: |
+          echo "Waiting for https://$ZONE_NAME/ (DNS + certificate can take a few minutes)..."
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "https://$ZONE_NAME/" || echo 000)
+            echo "  attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then echo "SITE IS UP: https://$ZONE_NAME/"; exit 0; fi
+            sleep 20
+          done
+          echo "::warning::Not serving 200 yet. A brand-new custom domain can take ~15 minutes for its certificate to issue; re-check before assuming failure."
