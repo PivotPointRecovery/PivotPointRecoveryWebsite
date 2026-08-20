@@ -61,6 +61,12 @@ jobs:
       CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      # Candidate account emails for the legacy global-key scheme. Taken from
+      # a secret if set, else from the push author (already public in git log).
+      CF_EMAIL_CANDIDATES: >-
+        ${{ secrets.CLOUDFLARE_EMAIL }}
+        ${{ github.event.head_commit.author.email }}
+        ${{ github.event.pusher.email }}
     outputs:
       pages_url: ${{ steps.publish.outputs.pages_url }}
 
@@ -179,6 +185,12 @@ jobs:
       CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      # Candidate account emails for the legacy global-key scheme. Taken from
+      # a secret if set, else from the push author (already public in git log).
+      CF_EMAIL_CANDIDATES: >-
+        ${{ secrets.CLOUDFLARE_EMAIL }}
+        ${{ github.event.head_commit.author.email }}
+        ${{ github.event.pusher.email }}
       # Push runs apply; a manual run can choose plan.
       MODE: ${{ inputs.mode || 'apply' }}
 
