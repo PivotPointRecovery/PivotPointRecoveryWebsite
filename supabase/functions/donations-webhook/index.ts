@@ -23,7 +23,7 @@
 import { serviceClient } from '../_shared/db.ts';
 import { env, hasEnv, healthReport } from '../_shared/env.ts';
 import { stripeRequest, verifySignature } from '../_shared/stripe.ts';
-import { sendDonorReceipt, sendNotification } from '../_shared/notify.ts';
+import { recipientCount, sendDonorReceipt, sendNotification } from '../_shared/notify.ts';
 import { money } from '../_shared/validate.ts';
 
 const REQUIRED_SECRETS = ['STRIPE_SECRET_KEY'];
@@ -63,6 +63,8 @@ Deno.serve(async (req) => {
         // still writes nothing it did not read back from Stripe, but signature
         // verification is the intended posture -- set STRIPE_WEBHOOK_SECRET.
         verification: hasEnv('STRIPE_WEBHOOK_SECRET') ? 'signature' : 'refetch_only',
+        // Count only, never the addresses.
+        recipients: await recipientCount('donations'),
       });
     }
     return reply({ error: 'Method not allowed' }, 405);
@@ -466,6 +468,8 @@ async function acknowledge(db: Db, donation: Obj, subject?: string): Promise<voi
     {
       replyTo: donation.donor_email ?? undefined,
       intro: `${donation.donor_name ?? 'A donor'} gave ${amount} through the website.`,
+      // A gift, not an enquiry -- goes to whoever reconciles donations.
+      audience: 'donations',
     },
   );
 

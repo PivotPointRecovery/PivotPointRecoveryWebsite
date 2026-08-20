@@ -199,22 +199,29 @@ saved but nobody was emailed — the exact failure this migration exists to end.
   `donations-*`, not the `donate-*` this runbook first guessed.)
 - CORS returns the production origin, and rejects origins outside the
   allowlist.
-- **Email works.** `pivotpointrecovery.org` is verified in Resend — DKIM
-  (`resend._domainkey`) and the `send.` bounce subdomain both resolve — and
-  `RESEND_FROM` is set to an address on the domain. A live `contact` POST
-  returns `{"ok":true,"notified":true}`. The `403 validation_error` documented
-  below is gone.
+- **Email sends but does not arrive.** The Resend side is fixed: the domain is
+  verified, `RESEND_FROM` is on-domain, live POSTs return
+  `{"ok":true,"notified":true}`, and the `403 validation_error` below is gone.
+  Delivery is a different question, and the answer is currently no — three
+  hours of live submissions produced nothing in
+  `erica@pivotpointrecovery.org` (spam and trash included) while other
+  external mail to that address arrived fine. See the README's Forms section
+  for the two checks that isolate it; the leading suspect is Google Workspace
+  quarantining same-domain mail sent via an external provider, which would
+  affect every staff recipient rather than one.
 - **Donations work.** Live Stripe Checkout sessions are created for both
   one-time and monthly gifts, driven from the real page in a browser, and
   verified server-side against the Stripe API (correct amount, `mode`,
   `submit_type: donate`, fund metadata, `client_reference_id`).
 - Forged and replayed webhook events are both rejected without writing.
 
-Remaining, and it is not a code change: **set `STRIPE_WEBHOOK_SECRET`** on the
-Supabase project to the signing secret of the live endpoint
-`we_1U6bEyGWetqSZh9zsx3gpfZD`. Until then the webhook runs in re-fetch-only
-mode — safe, because amounts are always read back from Stripe rather than taken
-from the payload, but signature verification should be on.
+`STRIPE_WEBHOOK_SECRET` is now set: the webhook reports
+`"verification":"signature"` and rejects a forged event with
+`400 Invalid signature`.
+
+The one thing still broken is delivery, not configuration — see the status note
+above and the README's Forms section. Notification mail is accepted by Resend
+and never arrives.
 
 Still open from step 1: import the exported CSVs into the new project's tables.
 
