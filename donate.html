@@ -10,6 +10,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Palanquin:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    .donate-success { display: none; text-align: center; padding: 2rem 0; }
+    .donate-success svg { width: 48px; height: 48px; color: #059669; margin-bottom: 1rem; }
+    .donate-success h2 { font-family: var(--font-display, 'Antonio', sans-serif); font-size: 1.35rem; color: var(--color-navy); text-transform: uppercase; margin: 1rem 0 0.5rem; }
+    .donate-success p { color: var(--color-text-mid); line-height: 1.6; }
+    .donate-success .receipt-note { font-size: 0.85rem; color: var(--color-text-light); margin-top: 1.25rem; }
+  </style>
 </head>
 <body>
   <nav class="nav scrolled" id="nav">
@@ -75,9 +82,9 @@
                 </div>
                 <div class="amount-custom">
                   <span>$</span>
-                  <input type="number" id="customAmount" min="1" step="1" placeholder="Other amount" aria-label="Custom donation amount">
+                  <input type="number" id="customAmount" min="5" step="1" placeholder="Other amount" aria-label="Custom donation amount">
                 </div>
-                <div class="form-error" id="amountError">Please enter an amount greater than zero.</div>
+                <div class="form-error" id="amountError">Please enter an amount of $5 or more.</div>
               </div>
 
               <div class="donate-summary">
@@ -118,6 +125,14 @@
               <button type="submit" class="btn btn-primary btn-large" id="donateBtn" style="width:100%;justify-content:center">Donate $50.00</button>
               <p class="form-note">Payments are securely processed by Stripe. You'll receive an emailed receipt for your records.</p>
             </form>
+
+            <div class="donate-success" id="donateSuccess">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <h2>Thank You for Your Gift</h2>
+              <p>Your donation went through. It funds peer support, recovery navigation, and reentry help for people who pay nothing to receive it.</p>
+              <p class="receipt-note">A receipt is on its way to your email for your tax records. Pivot Point Recovery, Inc. is a 501(c)(3) nonprofit — EIN 41-4331928.</p>
+              <p style="margin-top:1.5rem;"><a href="/" style="color:var(--color-blue);font-weight:600">Return home</a></p>
+            </div>
           </div>
         </div>
 
@@ -251,10 +266,18 @@
 
   <script src="/main.js"></script>
   <script>
-    // Posts to the portal's donation checkout API on the same host. That
-    // route resolves the tenant from the request host server-side, creates a
-    // Stripe Checkout session, and returns { url } for us to redirect to.
-    const CHECKOUT_ENDPOINT = '/api/donations/checkout';
+    // The website's own checkout function. It validates the amount server-side,
+    // records the pending gift, opens a Stripe Checkout session, and returns
+    // { url } for us to redirect to. Card data never touches this site.
+    //
+    // This used to post to /api/donations/checkout on the portal. That route
+    // stopped resolving when the site moved to standalone Cloudflare Pages and
+    // answered 405, which is what left the donate page dead.
+    const CHECKOUT_ENDPOINT = 'https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/donations-checkout';
+
+    // Mirrors MIN_CENTS in the checkout function. Below this, card fees eat the
+    // gift. Keep the two in step.
+    const MIN_GIFT = 5;
 
     let amount = 50;
     let isRecurring = false;
@@ -263,7 +286,7 @@
       return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     function refresh() {
-      const valid = amount > 0;
+      const valid = amount >= MIN_GIFT;
       document.getElementById('summaryValue').textContent = valid ? fmt(amount) : '—';
       const btn = document.getElementById('donateBtn');
       btn.textContent = valid
@@ -310,7 +333,7 @@
         document.querySelectorAll('.amount-btn').forEach(function (b) { b.classList.remove('active'); });
       }
       amount = isNaN(v) ? 0 : v;
-      if (amount > 0) hideError('amountError');
+      if (amount >= MIN_GIFT) hideError('amountError');
       refresh();
     });
 
@@ -345,7 +368,7 @@
       const employerMatch = document.getElementById('employerMatch').checked;
 
       let valid = true;
-      if (!(amount > 0)) { showError('amountError'); valid = false; } else { hideError('amountError'); }
+      if (!(amount >= MIN_GIFT)) { showError('amountError'); valid = false; } else { hideError('amountError'); }
       if (!donorName) { showError('donorNameError'); valid = false; } else { hideError('donorNameError'); }
       if (!donorEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donorEmail)) { showError('donorEmailError'); valid = false; } else { hideError('donorEmailError'); }
       if (!valid) return;
@@ -382,6 +405,29 @@
         btn.textContent = original;
       }
     });
+
+    // --- Return trip from Stripe ---------------------------------------------
+    // Checkout sends the donor back to /donate?status=success|cancelled. The
+    // gift itself is confirmed by the webhook, server-side -- this only decides
+    // what the donor sees, so a hand-typed ?status=success proves nothing and
+    // costs nothing.
+    (function handleReturn() {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      if (!status) return;
+
+      if (status === 'success') {
+        document.getElementById('donateForm').style.display = 'none';
+        document.getElementById('donateSuccess').style.display = 'block';
+        showToast('Thank you! Your donation was received.', 'success');
+      } else if (status === 'cancelled') {
+        showToast('Checkout was cancelled — nothing has been charged.', 'error');
+      }
+
+      // Drop the query string so a refresh or a shared link does not replay
+      // the banner, and the donor can give again from a clean form.
+      window.history.replaceState({}, document.title, window.location.pathname);
+    })();
 
     refresh();
   </script>

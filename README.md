@@ -73,39 +73,20 @@ If either `RESEND_API_KEY` or `NOTIFICATION_EMAILS` is unset, the submission is
 still saved to the database but **no email goes out**. The function returns
 `{ ok: true, notified: false }` and logs the reason.
 
-> **Open issue — no verified Resend domain (verified 2026-08-20).** Live test
-> submissions against project `ihgwhglatsbhngbsezuj` return
-> `{"ok":true,"notified":false}`. Rows save correctly, CORS is fine, and
-> `?health=1` now reports both `RESEND_API_KEY: true` and
-> `NOTIFICATION_EMAILS: true` — the secrets are not the problem. Resend is
-> rejecting the send outright:
+> **Resolved 2026-08-20.** `pivotpointrecovery.org` is now verified in Resend —
+> the DKIM key (`resend._domainkey`) and the bounce subdomain (`send.`, SPF +
+> MX to Amazon SES) both resolve, and `RESEND_FROM` is set to an address on the
+> domain. A live `contact` POST returns `{"ok":true,"notified":true}`; the
+> earlier `403 validation_error` from the shared `onboarding@resend.dev` sender
+> is gone, so mail is no longer restricted to the account owner's own address.
 >
-> ```
-> resend_failed 403 validation_error
-> You can only send testing emails to your own email address
-> (erica@pivotpointrecovery.org). To send emails to other recipients, please
-> verify a domain at resend.com/domains, and change the `from` address to an
-> email using this domain.
-> ```
->
-> `RESEND_FROM` is unset, so the sender falls back to Resend's shared
-> `onboarding@resend.dev`. On that sandbox sender Resend delivers **only** to
-> the account owner's own address, so mail to any other recipient —
-> `steve@pivotpointrecovery.org` included — is refused with the 403 above.
->
-> Two steps close it, neither of which lives in this repo:
->
-> 1. Verify `pivotpointrecovery.org` at [resend.com/domains](https://resend.com/domains)
->    — add the SPF and DKIM records it gives you to Cloudflare DNS and wait for
->    it to report Verified.
-> 2. Set `RESEND_FROM` to an address on that domain, e.g.
->    `Pivot Point Recovery <info@pivotpointrecovery.org>`. Leaving it unset
->    keeps the sandbox sender and the 403.
->
-> Until then, the only recipient Resend will accept is
-> `erica@pivotpointrecovery.org`. Setting `NOTIFICATION_EMAILS` to that address
-> is a usable stopgap: staff get mail immediately, and it can be widened to
-> Steve and `info@` once the domain verifies.
+> One thing this repo cannot check: whether the mail lands in the staff
+> inboxes named by `NOTIFICATION_EMAILS`. `notified: true` means Resend
+> accepted the message, not that Google delivered it. Confirm the first real
+> submission with Steve, or check per-message status at
+> [resend.com/emails](https://resend.com/emails). DMARC on the domain is
+> `p=quarantine` with relaxed alignment, and Resend's DKIM signs as
+> `pivotpointrecovery.org`, so alignment passes.
 
 Verify with:
 
@@ -123,20 +104,133 @@ curl -s -X POST https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/public-for
 
 ## Donations
 
-`donate.html` collects the amount and donor details, then POSTs to the portal's
-checkout API on the same origin:
+`donate.html` collects the amount and donor details, then POSTs to the site's
+own checkout function — the same Supabase project as the forms:
 
 ```
-POST /api/donations/checkout  →  { url }  →  redirect to Stripe Checkout
+POST https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/donations-checkout
+  →  { url }  →  redirect to Stripe Checkout
 ```
 
-The API resolves the tenant from the request host server-side and never trusts
-a tenant field in the body. Card data never touches this site.
+It no longer posts to `/api/donations/checkout`. That route belonged to the
+portal, stopped resolving when this site moved to standalone Cloudflare Pages,
+and answered **405** — which is what left the donate page dead. Nothing but the
+static site needs to be mounted on this host any more.
 
-**Deployment requirement:** `/api/*` and `/portal/*` must continue to route to
-the portal application. If this static site is served as a Cloudflare Pages
-project in front of the portal Worker, keep those prefixes falling through —
-otherwise the donate form has no checkout endpoint.
+Card data never touches this site. Both functions run with `verify_jwt` off
+because they are public endpoints; they authenticate by origin, honeypot, and
+(for the webhook) Stripe's own signature.
+
+| Function | Job |
+| --- | --- |
+| `donations-checkout` | Validates the gift, writes a `pending` row, opens a Stripe Checkout session |
+| `donations-webhook` | Confirms the gift from Stripe, emails the donor a receipt and staff a notification |
+
+### What the checkout function decides, not the browser
+
+The amount in the request body is a suggestion. The function re-derives what is
+chargeable: a **$5 floor** (below it card fees eat the gift) and a **$50,000
+ceiling** (above it, a card is the wrong instrument — the donor is asked to get
+in touch). `donate.html` enforces the same floor client-side so the donor is
+told before a round trip; `MIN_GIFT` there and `MIN_CENTS` in the function have
+to stay in step.
+
+The `donations` row is written *before* Stripe is called, so every attempt is
+attributable even if Stripe errors, and its id is used as the Stripe
+idempotency key — a double-submitted form cannot double-charge. Stripe metadata
+carries donor and fund fields only; no participant identifiers ever cross into
+it.
+
+### The webhook
+
+Stripe posts to `donations-webhook`, which is subscribed to
+`checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+`checkout.session.async_payment_failed`, `checkout.session.expired`,
+`invoice.paid`, and `customer.subscription.deleted`.
+
+Two independent defences, because money is on the line:
+
+1. **Signature check** against `STRIPE_WEBHOOK_SECRET`, with a 5-minute
+   timestamp tolerance and a constant-time compare.
+2. **Re-fetch.** Every object is read back from the Stripe API before anything
+   is written, so amounts and payment status come from Stripe rather than from
+   the request body. If `STRIPE_WEBHOOK_SECRET` is unset the function stays up
+   in re-fetch-only mode and `?health=1` reports
+   `"verification":"refetch_only"` — a forged event still cannot book a gift,
+   because the amount is never taken from the payload. Set the secret anyway.
+
+Redelivery is handled by a `stripe_events` table keyed on the Stripe event id,
+so a replayed event returns `{"received":true,"duplicate":true}` and writes
+nothing. Monthly renewals — the one donation with no checkout session behind it
+— are keyed on the invoice id instead, which is what stops a redelivered
+`invoice.paid` booking the same gift twice.
+
+### Receipts
+
+On a confirmed gift the webhook sends the donor a 501(c)(3) acknowledgement
+(amount, date, fund, EIN 41-4331928, and the no-goods-or-services language the
+IRS wants) and notifies staff separately. The two are tracked in different
+columns — `receipt_sent_at` and `notified` — so if one send fails the retry
+only repeats the half that failed, and no donor is thanked twice. Set
+`DONOR_RECEIPTS=0` to suppress donor receipts and keep staff notifications.
+
+## Backend
+
+The backend now lives in this repo rather than only in the dashboard, so a
+deploy is reproducible and reviewable:
+
+```
+supabase/
+  config.toml
+  migrations/            schema, applied in filename order
+  functions/
+    _shared/             http (CORS), db, env, validate, notify, stripe
+    public-forms/        contact + volunteer
+    donations-checkout/  opens Stripe Checkout
+    donations-webhook/   confirms gifts, sends receipts
+```
+
+Deploy with the Supabase CLI:
+
+```sh
+supabase link --project-ref ihgwhglatsbhngbsezuj
+supabase db push
+supabase functions deploy public-forms      --no-verify-jwt
+supabase functions deploy donations-checkout --no-verify-jwt
+supabase functions deploy donations-webhook  --no-verify-jwt
+```
+
+`--no-verify-jwt` is required: these are public endpoints called by anonymous
+visitors and by Stripe, neither of which carries a Supabase JWT.
+
+### Secrets
+
+Set on the Supabase project, not in this repo. `env.ts` resolves each through a
+short alias list, so a name that is *close* still works — but check
+`?health=1` rather than assuming, because a missed secret fails silently.
+
+| Secret | Used by | Effect if unset |
+| --- | --- | --- |
+| `STRIPE_SECRET_KEY` | checkout, webhook | Checkout returns 502; no gift can be made |
+| `STRIPE_WEBHOOK_SECRET` | webhook | Falls back to re-fetch-only verification |
+| `RESEND_API_KEY` | all three | Rows save, no mail |
+| `NOTIFICATION_EMAILS` | all three | Rows save, staff not told |
+| `RESEND_FROM` | all three | Falls back to Resend's sandbox sender (403 to anyone but the account owner) |
+| `SITE_URL` | checkout, webhook | Defaults to `https://pivotpointrecovery.org` |
+| `DONOR_RECEIPTS` | webhook | Receipts on; set `0` to suppress |
+| `ALLOWED_ORIGINS` | all three | Defaults to the production hosts + `*.pages.dev` + localhost |
+
+Health-check every function at once:
+
+```sh
+for fn in public-forms donations-checkout donations-webhook; do
+  echo -n "$fn: "
+  curl -s "https://ihgwhglatsbhngbsezuj.supabase.co/functions/v1/$fn?health=1"; echo
+done
+```
+
+`donations-checkout` also reports `"mode":"live"|"test"|"unset"`, so a test key
+left in production is visible without exposing the key.
 
 ## Local development
 
@@ -147,33 +241,22 @@ python3 -m http.server 8080
 # then open http://localhost:8080
 ```
 
-Note that `/donate` submissions will fail locally — there's no `/api` backend
-on the dev server. Test giving against a deployed preview.
+`/donate` works from `localhost` — the checkout function's CORS allowlist
+covers localhost and `*.pages.dev` previews alongside the production hosts. Use
+a [Stripe test card](https://docs.stripe.com/testing) rather than a real one,
+and note the deployed function is on **live** keys, so a gift made from a local
+page is a real charge.
 
 ## Deployment
 
 Cloudflare Pages, served from the repository root. `_headers` sets the security
 and CSP policy; extend the CSP there if you add a new external asset host.
 
-> **Site is currently down — Cloudflare Error 1000 (verified 2026-08-20).**
-> Every path on `pivotpointrecovery.org` returns HTTP 403 with Cloudflare's
-> *"DNS points to prohibited IP"* interstitial. The zone is live on Cloudflare
-> (`owen`/`carrera.ns.cloudflare.com`), but the root `A`/`AAAA` records in the
-> Cloudflare DNS tab hold Cloudflare's own anycast addresses
-> (`104.21.20.223`, `172.67.194.181`, `2606:4700:30xx::…`), which makes the
-> proxy resolve to itself. No `*.pages.dev` hostname for this project resolves
-> either, so there is no origin behind the domain right now.
->
-> This is a dashboard fix, not a code fix — nothing in this repo can change it:
->
-> 1. Deploy this repository as a Cloudflare Pages project (root directory, no
->    build command, no build output directory).
-> 2. In **Pages → the project → Custom domains**, add `pivotpointrecovery.org`
->    and `www.pivotpointrecovery.org`. Let Pages create the records itself.
-> 3. In **DNS → Records**, delete the leftover `A`/`AAAA` rows for `@` and
->    `www` that point at the Cloudflare IPs above. Those rows are what triggers
->    Error 1000; the Pages custom-domain record replaces them.
-> 4. Re-check with `curl -I https://pivotpointrecovery.org/` — expect `200`.
->
-> Keep `/api/*` and `/portal/*` routing to the portal application as described
-> under [Donations](#donations), or the donate page loses its checkout endpoint.
+> **Error 1000 outage: resolved (verified 2026-08-20).** `https://pivotpointrecovery.org/`
+> and `/donate` both return `200`. The apex no longer resolves to Cloudflare's
+> own anycast addresses.
+
+`/portal` still needs to reach the portal application — the footer "PPR Login"
+link depends on it. `/api/*` does **not**: the donate page now calls the
+Supabase function directly, so nothing on this host has to proxy an API any
+more.
