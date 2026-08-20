@@ -1,0 +1,181 @@
+name: Deploy to Cloudflare Pages
+
+# Builds a clean copy of the static site and publishes it to Cloudflare Pages.
+#
+# This workflow is deliberately NON-DESTRUCTIVE: it creates the Pages project
+# if it is missing and uploads the site, but it never edits DNS. Repointing the
+# apex domain is a separate, deliberate step — see fix-dns.yml.
+#
+# Repo is public, so logs are public: account and zone IDs are masked, and only
+# already-public information (DNS record names/contents) is ever printed.
+
+on:
+  push:
+    branches: [main, claude/website-forms-broken-7v6bu3]
+    paths-ignore: ['README.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-deploy
+  cancel-in-progress: false
+
+env:
+  ZONE_NAME: pivotpointrecovery.org
+  PROJECT_NAME: pivotpointrecovery
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Report which secrets are configured (names only, never values)
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+        run: |
+          echo "Secrets available to this workflow:"
+          echo "$SECRETS_JSON" | jq -r 'keys[] | "  - " + .'
+
+      - name: Resolve Cloudflare credentials
+        id: creds
+        env:
+          T1: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          T2: ${{ secrets.CF_API_TOKEN }}
+          T3: ${{ secrets.CLOUDFLARE_TOKEN }}
+          A1: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          A2: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          TOKEN=""
+          for c in "$T1" "$T2" "$T3"; do
+            if [ -n "$c" ]; then TOKEN="$c"; break; fi
+          done
+          if [ -z "$TOKEN" ]; then
+            echo "::error::No Cloudflare API token found. Expected a repository secret named CLOUDFLARE_API_TOKEN (or CF_API_TOKEN / CLOUDFLARE_TOKEN). See the secret names listed in the previous step."
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+          ACCT=""
+          for c in "$A1" "$A2"; do
+            if [ -n "$c" ]; then ACCT="$c"; break; fi
+          done
+          if [ -n "$ACCT" ]; then echo "::add-mask::$ACCT"; fi
+          echo "ACCT=$ACCT" >> "$GITHUB_ENV"
+
+      - name: Verify token and resolve account
+        run: |
+          set -euo pipefail
+          api() { curl -sS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' "$@"; }
+
+          echo "== Token verification =="
+          v=$(api "https://api.cloudflare.com/client/v4/user/tokens/verify")
+          if [ "$(echo "$v" | jq -r '.success')" != "true" ]; then
+            echo "::error::Cloudflare rejected the API token."
+            echo "$v" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
+            exit 1
+          fi
+          echo "  token status: $(echo "$v" | jq -r '.result.status')"
+
+          if [ -z "${ACCT:-}" ]; then
+            echo "== Resolving account (no account-id secret set) =="
+            a=$(api "https://api.cloudflare.com/client/v4/accounts?per_page=50")
+            n=$(echo "$a" | jq -r '.result | length')
+            echo "  accounts visible to this token: $n"
+            if [ "$n" != "1" ]; then
+              echo "$a" | jq -r '.result[]? | "  - " + .name'
+              echo "::error::Expected exactly one account; set CLOUDFLARE_ACCOUNT_ID to disambiguate."
+              exit 1
+            fi
+            ACCT=$(echo "$a" | jq -r '.result[0].id')
+            echo "::add-mask::$ACCT"
+            echo "ACCT=$ACCT" >> "$GITHUB_ENV"
+          fi
+          echo "  account resolved OK"
+
+      - name: Inspect zone, DNS and existing Pages projects
+        run: |
+          set -euo pipefail
+          api() { curl -sS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' "$@"; }
+
+          echo "== Zone =="
+          z=$(api "https://api.cloudflare.com/client/v4/zones?name=$ZONE_NAME")
+          if [ "$(echo "$z" | jq -r '.result | length')" != "1" ]; then
+            echo "::warning::Zone $ZONE_NAME not visible to this token — the DNS step will need a token with Zone:DNS:Edit on this zone."
+          else
+            ZID=$(echo "$z" | jq -r '.result[0].id')
+            echo "::add-mask::$ZID"
+            echo "ZID=$ZID" >> "$GITHUB_ENV"
+            echo "  zone status: $(echo "$z" | jq -r '.result[0].status')"
+
+            echo "== Current A/AAAA/CNAME records on apex and www (public info) =="
+            r=$(api "https://api.cloudflare.com/client/v4/zones/$ZID/dns_records?per_page=100")
+            echo "$r" | jq -r --arg z "$ZONE_NAME" '
+              .result[]
+              | select(.name == $z or .name == "www." + $z)
+              | select(.type == "A" or .type == "AAAA" or .type == "CNAME")
+              | "  " + .type + "  " + .name + "  ->  " + .content + "   proxied=" + (.proxied|tostring)'
+          fi
+
+          echo "== Existing Pages projects =="
+          p=$(api "https://api.cloudflare.com/client/v4/accounts/$ACCT/pages/projects")
+          if [ "$(echo "$p" | jq -r '.success')" != "true" ]; then
+            echo "::warning::Could not list Pages projects — token may lack Pages:Edit."
+            echo "$p" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
+          else
+            echo "$p" | jq -r 'if (.result|length) == 0 then "  (none)" else (.result[] | "  - " + .name + "  subdomain=" + (.subdomain // "?")) end'
+          fi
+
+      - name: Stage site files
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp -v *.html styles.css main.js *.svg veteran.jpeg _headers _site/
+          echo "staged:"; ls -1 _site
+
+      - name: Create Pages project if it does not exist
+        run: |
+          set -euo pipefail
+          api() { curl -sS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' "$@"; }
+
+          existing=$(api "https://api.cloudflare.com/client/v4/accounts/$ACCT/pages/projects" \
+            | jq -r --arg n "$PROJECT_NAME" '.result[]? | select(.name == $n) | .name')
+
+          if [ -n "$existing" ]; then
+            echo "Project '$PROJECT_NAME' already exists — reusing it."
+          else
+            echo "Creating Pages project '$PROJECT_NAME'..."
+            c=$(api -X POST "https://api.cloudflare.com/client/v4/accounts/$ACCT/pages/projects" \
+              --data "{\"name\":\"$PROJECT_NAME\",\"production_branch\":\"main\"}")
+            if [ "$(echo "$c" | jq -r '.success')" != "true" ]; then
+              echo "::error::Failed to create Pages project."
+              echo "$c" | jq -r '.errors[]? | "  " + (.code|tostring) + ": " + .message'
+              exit 1
+            fi
+            echo "Created."
+          fi
+
+      - name: Publish to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.ACCT }}
+        run: npx --yes wrangler@3 pages deploy _site --project-name="$PROJECT_NAME" --branch=main
+
+      - name: Confirm the deployed site responds
+        run: |
+          set -euo pipefail
+          url="https://$PROJECT_NAME.pages.dev/"
+          echo "Waiting for $url to serve..."
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$url" || echo 000)
+            echo "  attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "LIVE: $url"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning::$url did not return 200 yet; the first deploy can take an extra minute to propagate."
