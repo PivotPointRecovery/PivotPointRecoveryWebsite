@@ -11,6 +11,7 @@
 // email problem cannot be allowed to turn a completed donation into an error.
 
 import { env, envDisabled } from './env.ts';
+import { serviceClient } from './db.ts';
 import { escapeHtml, money } from './validate.ts';
 
 export interface NotifyResult {
@@ -26,16 +27,56 @@ const SITE = 'pivotpointrecovery.org';
 const BRAND_BLUE = '#005191';
 const NAVY = '#1a2b4a';
 
-function recipients(): string[] {
+/** Which notifications a recipient asked for. The audiences differ: whoever
+ *  works enquiries is not necessarily whoever reconciles gifts. */
+export type Audience = 'forms' | 'donations';
+
+function secretRecipients(): string[] {
   return env('NOTIFICATION_EMAILS')
     .split(',')
     .map((address) => address.trim())
     .filter(Boolean);
 }
 
-/** Presence check used by the ?health=1 endpoints. */
-export function notifyConfigured(): boolean {
-  return Boolean(env('RESEND_API_KEY')) && recipients().length > 0;
+/**
+ * Everyone who should be told: the `notification_recipients` table unioned with
+ * the NOTIFICATION_EMAILS secret.
+ *
+ * Union, not replacement. The table is an addition, so an empty table changes
+ * nothing and there is no window where notifications stop -- and if the table
+ * cannot be read at all, whoever the secret names still gets mailed. Adding a
+ * person is now an insert rather than a privileged secret edit plus a redeploy,
+ * which is what let the list quietly omit someone for months.
+ */
+async function recipients(audience: Audience): Promise<string[]> {
+  let fromTable: string[] = [];
+
+  try {
+    const column = audience === 'forms' ? 'receives_forms' : 'receives_donations';
+    const { data, error } = await serviceClient()
+      .from('notification_recipients')
+      .select('email')
+      .eq('active', true)
+      .eq(column, true);
+    if (error) throw error;
+    fromTable = (data ?? []).map((row) => String(row.email ?? ''));
+  } catch (error) {
+    console.error('recipients_table_unreadable', error);
+  }
+
+  // Table first, so the address a human most recently added leads the list --
+  // it is also what a donor's reply-to points at. Case-insensitive dedupe, so
+  // Steve@ and steve@ cannot both be present and send everything twice.
+  const seen = new Set<string>();
+  return [...fromTable, ...secretRecipients()]
+    .map((address) => address.trim())
+    .filter(Boolean)
+    .filter((address) => {
+      const key = address.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
 function sender(): string {
@@ -97,14 +138,26 @@ async function send(payload: Record<string, unknown>, label: string): Promise<No
   }
 }
 
+/**
+ * How many people would be notified, for `?health=1`. A count only -- never the
+ * addresses, since the health endpoint is unauthenticated. This is the check
+ * that was missing: `notified: true` never revealed that the list omitted
+ * someone, because from outside, one recipient and five look identical.
+ */
+export async function recipientCount(audience: Audience = 'forms'): Promise<number> {
+  return (await recipients(audience)).length;
+}
+
 /** Staff notification: a form submission or an incoming gift. */
 export async function sendNotification(
   subject: string,
   rows: Array<[string, string]>,
-  opts: { replyTo?: string; intro?: string } = {},
+  opts: { replyTo?: string; intro?: string; audience?: Audience } = {},
 ): Promise<NotifyResult> {
-  const to = recipients();
-  if (to.length === 0) return { notified: false, reason: 'NOTIFICATION_EMAILS not set' };
+  const to = await recipients(opts.audience ?? 'forms');
+  if (to.length === 0) {
+    return { notified: false, reason: 'no recipients (table empty and NOTIFICATION_EMAILS unset)' };
+  }
 
   const prefix = env('NOTIFICATION_PREFIX', 'PPR');
   const inner = `${
@@ -197,7 +250,7 @@ export async function sendDonorReceipt(gift: DonorReceipt): Promise<NotifyResult
     html: wrap('Thank you for your gift', inner, `${ORG_NAME} &middot; EIN ${ORG_EIN} &middot; ${SITE}`),
   };
   // A donor replying to their receipt should reach a human, not the void.
-  const staff = recipients();
+  const staff = await recipients('donations');
   if (staff.length > 0) payload.reply_to = staff[0];
 
   return await send(payload, 'resend_receipt');

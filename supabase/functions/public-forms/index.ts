@@ -9,12 +9,20 @@
 
 import { fail, json, preflight } from '../_shared/http.ts';
 import { serviceClient } from '../_shared/db.ts';
-import { sendNotification } from '../_shared/notify.ts';
+import { recipientCount, sendNotification } from '../_shared/notify.ts';
 import { healthReport } from '../_shared/env.ts';
 import { email as parseEmail, str, strList } from '../_shared/validate.ts';
 
-const REQUIRED_SECRETS = ['RESEND_API_KEY', 'NOTIFICATION_EMAILS'];
-const OPTIONAL_SECRETS = ['RESEND_FROM', 'NOTIFICATION_PREFIX', 'ALLOWED_ORIGINS'];
+const REQUIRED_SECRETS = ['RESEND_API_KEY'];
+// NOTIFICATION_EMAILS is no longer required: recipients can come from the
+// notification_recipients table instead. `recipients` in the health output is
+// the number that actually matters -- if it is 0, nobody gets told.
+const OPTIONAL_SECRETS = [
+  'NOTIFICATION_EMAILS',
+  'RESEND_FROM',
+  'NOTIFICATION_PREFIX',
+  'ALLOWED_ORIGINS',
+];
 
 Deno.serve(async (req) => {
   const pre = preflight(req);
@@ -23,7 +31,12 @@ Deno.serve(async (req) => {
   if (req.method === 'GET') {
     const url = new URL(req.url);
     if (url.searchParams.has('health')) {
-      return json(req, { service: 'public-forms', ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS) });
+      return json(req, {
+        service: 'public-forms',
+        ...healthReport(REQUIRED_SECRETS, OPTIONAL_SECRETS),
+        // Count only, never the addresses.
+        recipients: await recipientCount('forms'),
+      });
     }
     return fail(req, 'Method not allowed', 405);
   }

@@ -59,8 +59,38 @@ accepts and drops any submission that fills it.
 
 ### Who receives the notification emails
 
-Recipients are **not** configured in this repo. The edge function reads a
-comma-separated `NOTIFICATION_EMAILS` secret, and sends through Resend:
+Two sources, unioned — the `notification_recipients` table and the
+`NOTIFICATION_EMAILS` secret. Adding a person is an insert, not a privileged
+secret edit plus a redeploy:
+
+```sql
+insert into public.notification_recipients (email, label)
+values ('steve@pivotpointrecovery.org', 'Steve');
+
+-- Stop mailing someone without losing the record that they were on the list
+update public.notification_recipients set active = false where email = '…';
+
+-- Donations and enquiries can go to different people
+update public.notification_recipients
+   set receives_donations = false where email = '…';
+```
+
+The table is an addition, never a replacement: an empty table changes nothing,
+and if it cannot be read at all, whoever the secret names is still mailed.
+Matching is case-insensitive, so one person cannot appear twice and get every
+notification twice.
+
+`?health=1` reports a `recipients` **count** (never the addresses — the
+endpoint is unauthenticated). That count is the number that matters: `notified:
+true` never revealed that the list omitted someone, because from outside, one
+recipient and five look identical. It is how the omission below went unnoticed.
+
+> **Worth knowing:** for months the list did not include
+> `erica@pivotpointrecovery.org` — the person asking where the notifications
+> were. Nothing reported this, because a send to the addresses that *were*
+> listed succeeds and returns `notified: true`.
+
+The secret still works and is still read:
 
 ```sh
 supabase secrets set RESEND_API_KEY="re_..." \
@@ -73,20 +103,48 @@ If either `RESEND_API_KEY` or `NOTIFICATION_EMAILS` is unset, the submission is
 still saved to the database but **no email goes out**. The function returns
 `{ ok: true, notified: false }` and logs the reason.
 
-> **Resolved 2026-08-20.** `pivotpointrecovery.org` is now verified in Resend —
-> the DKIM key (`resend._domainkey`) and the bounce subdomain (`send.`, SPF +
-> MX to Amazon SES) both resolve, and `RESEND_FROM` is set to an address on the
-> domain. A live `contact` POST returns `{"ok":true,"notified":true}`; the
-> earlier `403 validation_error` from the shared `onboarding@resend.dev` sender
-> is gone, so mail is no longer restricted to the account owner's own address.
+> **Half-fixed, and the remaining half is worse than it looks (2026-08-20).**
 >
-> One thing this repo cannot check: whether the mail lands in the staff
-> inboxes named by `NOTIFICATION_EMAILS`. `notified: true` means Resend
-> accepted the message, not that Google delivered it. Confirm the first real
-> submission with Steve, or check per-message status at
-> [resend.com/emails](https://resend.com/emails). DMARC on the domain is
-> `p=quarantine` with relaxed alignment, and Resend's DKIM signs as
-> `pivotpointrecovery.org`, so alignment passes.
+> The *sending* problem is genuinely gone. `pivotpointrecovery.org` is verified
+> in Resend — DKIM (`resend._domainkey`) and the `send.` bounce subdomain both
+> resolve — `RESEND_FROM` is on-domain, and the old
+> `403 validation_error` is no longer returned. Live submissions come back
+> `{"ok":true,"notified":true}`.
+>
+> **But the mail is not arriving.** Over three hours, across repeated live
+> submissions, nothing from this sender reached
+> `erica@pivotpointrecovery.org` — checked with `in:anywhere`, so spam and
+> trash included — while Stripe, Supabase and other external mail to the same
+> address arrived normally. The mailbox is fine; our mail is not getting to it.
+>
+> `notified: true` means *Resend accepted the API call*. It says nothing about
+> delivery, which is exactly the blind spot that let this sit unnoticed.
+>
+> Two checks pinpoint which side is dropping it:
+>
+> 1. **[resend.com/emails](https://resend.com/emails)** — per-message status.
+>    `delivered` vs `bounced` / `blocked` decides everything below.
+> 2. **Google Admin → spam quarantine** (`admin.google.com`) — if Resend says
+>    delivered, the message is being held before the mailbox.
+>
+> The likely cause, if it is the Google side: the notification is sent **from
+> an address on `pivotpointrecovery.org` to recipients on
+> `pivotpointrecovery.org`**, via an external provider. Google Workspace
+> quarantines same-domain mail arriving from outside by default ("protect
+> against spoofing of your domain"), and that rule is applied independently of
+> SPF/DKIM/DMARC — all of which pass here (DKIM signs as the org domain, so
+> alignment is fine under `p=quarantine`).
+>
+> If that is it, this affects **every staff recipient**, not one person —
+> `steve@` and `info@` are on the same domain as the sender.
+>
+> Two ways out:
+>
+> - Allow the sender in Google Admin (Gmail → Spam, Phishing and Malware).
+> - Or send from a **subdomain** — e.g. `no-reply@send.pivotpointrecovery.org`
+>   — which sidesteps the same-domain heuristic entirely. That subdomain
+>   already carries SPF and an SES MX; add it in Resend as a sending domain and
+>   point `RESEND_FROM` at it.
 
 Verify with:
 
@@ -183,6 +241,7 @@ deploy is reproducible and reviewable:
 supabase/
   config.toml
   migrations/            schema, applied in filename order
+                         (incl. notification_recipients)
   functions/
     _shared/             http (CORS), db, env, validate, notify, stripe
     public-forms/        contact + volunteer
@@ -214,7 +273,7 @@ short alias list, so a name that is *close* still works — but check
 | `STRIPE_SECRET_KEY` | checkout, webhook | Checkout returns 502; no gift can be made |
 | `STRIPE_WEBHOOK_SECRET` | webhook | Falls back to re-fetch-only verification |
 | `RESEND_API_KEY` | all three | Rows save, no mail |
-| `NOTIFICATION_EMAILS` | all three | Rows save, staff not told |
+| `NOTIFICATION_EMAILS` | all three | Only the `notification_recipients` table is used; if that is empty too, staff are not told |
 | `RESEND_FROM` | all three | Falls back to Resend's sandbox sender (403 to anyone but the account owner) |
 | `SITE_URL` | checkout, webhook | Defaults to `https://pivotpointrecovery.org` |
 | `DONOR_RECEIPTS` | webhook | Receipts on; set `0` to suppress |

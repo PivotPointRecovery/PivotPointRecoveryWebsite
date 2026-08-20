@@ -199,11 +199,16 @@ saved but nobody was emailed — the exact failure this migration exists to end.
   `donations-*`, not the `donate-*` this runbook first guessed.)
 - CORS returns the production origin, and rejects origins outside the
   allowlist.
-- **Email works.** `pivotpointrecovery.org` is verified in Resend — DKIM
-  (`resend._domainkey`) and the `send.` bounce subdomain both resolve — and
-  `RESEND_FROM` is set to an address on the domain. A live `contact` POST
-  returns `{"ok":true,"notified":true}`. The `403 validation_error` documented
-  below is gone.
+- **Email sends but does not arrive.** The Resend side is fixed: the domain is
+  verified, `RESEND_FROM` is on-domain, live POSTs return
+  `{"ok":true,"notified":true}`, and the `403 validation_error` below is gone.
+  Delivery is a different question, and the answer is currently no — three
+  hours of live submissions produced nothing in
+  `erica@pivotpointrecovery.org` (spam and trash included) while other
+  external mail to that address arrived fine. See the README's Forms section
+  for the two checks that isolate it; the leading suspect is Google Workspace
+  quarantining same-domain mail sent via an external provider, which would
+  affect every staff recipient rather than one.
 - **Donations work.** Live Stripe Checkout sessions are created for both
   one-time and monthly gifts, driven from the real page in a browser, and
   verified server-side against the Stripe API (correct amount, `mode`,
